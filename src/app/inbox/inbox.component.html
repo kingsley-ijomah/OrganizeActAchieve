@@ -1,1 +1,40 @@
-<p>inbox works!</p>
+<div class="inbox-container">
+  <header class="inbox-header">
+    <h1 class="inbox-title">Inbox</h1>
+  </header>
+  
+  <div class="inbox-input-row">
+    <input 
+      class="inbox-input" 
+      placeholder="Capture a new item…" 
+      type="text"
+      readonly
+    />
+    <button class="icon-btn mic-btn" type="button" aria-label="Record voice">
+      <span class="material-icons">mic</span>
+    </button>
+    <button class="icon-btn add-btn" type="button" aria-label="Add item">
+      <span class="material-icons">add</span>
+    </button>
+  </div>
+  
+  <button 
+    class="show-list-btn" 
+    type="button"
+    (click)="toggleList()"
+    [attr.aria-expanded]="showList"
+    aria-label="Toggle inbox items list"
+  >
+    <span class="material-icons">{{ showList ? 'expand_less' : 'expand_more' }}</span>
+    <span class="btn-text">{{ showList ? 'Hide Items' : 'Show Items' }}</span>
+    <span class="item-count">{{ inboxItems.length }}</span>
+  </button>
+
+  <ul class="inbox-list" *ngIf="showList">
+    <li *ngFor="let item of inboxItems" class="inbox-item">
+      <span class="item-title">{{ item.title }}</span>
+    </li>
+  </ul>
+
+  <router-outlet></router-outlet>
+</div>
