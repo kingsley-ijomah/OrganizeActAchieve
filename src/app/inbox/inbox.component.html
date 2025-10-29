@@ -30,11 +30,28 @@
     <span class="item-count">{{ inboxItems.length }}</span>
   </button>
 
-  <ul class="inbox-list" *ngIf="showList">
-    <li *ngFor="let item of inboxItems" class="inbox-item">
-      <span class="item-title">{{ item.title }}</span>
-    </li>
-  </ul>
+  <div class="inbox-list-container" *ngIf="showList">
+    <ul class="inbox-list">
+      <li *ngFor="let item of displayedItems" class="inbox-item">
+        <button class="item-checkbox" type="button" aria-label="Toggle task completion">
+          <span class="material-icons checkbox-icon">radio_button_unchecked</span>
+        </button>
+        <span class="item-title">{{ item.title }}</span>
+      </li>
+    </ul>
+    
+    <button 
+      class="load-more-btn" 
+      type="button"
+      *ngIf="hasMoreItems"
+      (click)="loadMore()"
+      aria-label="Load more items"
+    >
+      <span class="load-more-text">Load More</span>
+      <span class="load-more-count">({{ remainingCount }} remaining)</span>
+      <span class="material-icons">expand_more</span>
+    </button>
+  </div>
 
   <router-outlet></router-outlet>
 </div>
