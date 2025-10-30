@@ -1,14 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterOutlet } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-
-export interface Project {
-  id: number;
-  name: string;
-  totalTasks: number;
-  completedTasks: number;
-}
+import { DataService, Project } from '../services/data.service';
 
 @Component({
   selector: 'app-projects',
@@ -17,14 +11,20 @@ export interface Project {
   templateUrl: './projects.component.html',
   styleUrls: ['./projects.component.scss']
 })
-export class ProjectsComponent {
+export class ProjectsComponent implements OnInit {
   searchQuery: string = '';
   newProjectName: string = '';
   showAddForm: boolean = false;
   itemsPerPage: number = 8;
   displayedItemsCount: number = 8;
   
-  projects: Project[] = [
+  projects: Project[] = [];
+
+  constructor(private dataService: DataService) {
+    this.projects = this.dataService.getProjects();
+  }
+
+  private mockProjects: Project[] = [
     { id: 1, name: 'Website Redesign', totalTasks: 15, completedTasks: 8 },
     { id: 2, name: 'Mobile App Development', totalTasks: 32, completedTasks: 12 },
     { id: 3, name: 'Marketing Campaign', totalTasks: 24, completedTasks: 18 },
@@ -46,6 +46,16 @@ export class ProjectsComponent {
     { id: 19, name: 'Database Migration', totalTasks: 29, completedTasks: 20 },
     { id: 20, name: 'Testing Framework', totalTasks: 15, completedTasks: 12 },
   ];
+
+  ngOnInit() {
+    // Initialize projects if empty
+    if (this.projects.length === 0) {
+      this.mockProjects.forEach(project => {
+        this.dataService.addProject(project);
+      });
+      this.projects = this.dataService.getProjects();
+    }
+  }
 
   get filteredProjects(): Project[] {
     if (!this.searchQuery.trim()) {
@@ -84,12 +94,14 @@ export class ProjectsComponent {
   addProject(): void {
     if (this.newProjectName.trim()) {
       const newId = Math.max(...this.projects.map(p => p.id), 0) + 1;
-      this.projects.unshift({
+      const newProject: Project = {
         id: newId,
         name: this.newProjectName.trim(),
         totalTasks: 0,
         completedTasks: 0
-      });
+      };
+      this.dataService.addProject(newProject);
+      this.projects = this.dataService.getProjects();
       this.newProjectName = '';
       this.showAddForm = false;
     }
@@ -103,9 +115,7 @@ export class ProjectsComponent {
   }
 
   deleteProject(projectId: number): void {
-    const index = this.projects.findIndex(p => p.id === projectId);
-    if (index > -1) {
-      this.projects.splice(index, 1);
-    }
+    this.dataService.deleteProject(projectId);
+    this.projects = this.dataService.getProjects();
   }
 }
