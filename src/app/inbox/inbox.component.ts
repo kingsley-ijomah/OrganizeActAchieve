@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, AfterViewChecked, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -10,11 +10,14 @@ import { FormsModule } from '@angular/forms';
   templateUrl: './inbox.component.html',
   styleUrls: ['./inbox.component.scss']
 })
-export class InboxComponent {
+export class InboxComponent implements AfterViewChecked {
   showList = false;
   newItemText = '';
   itemsPerPage = 10;
   displayedItemsCount = 10;
+  editingItemId: number | null = null;
+  editingItemText = '';
+  shouldFocusEdit = false;
   
   inboxItems = [
     { id: 1, title: 'Review project proposal' },
@@ -75,5 +78,55 @@ export class InboxComponent {
       this.displayedItemsCount + this.itemsPerPage,
       this.inboxItems.length
     );
+  }
+
+  constructor(private cdr: ChangeDetectorRef) {}
+
+  ngAfterViewChecked() {
+    if (this.shouldFocusEdit) {
+      const editInput = document.querySelector('.edit-input') as HTMLInputElement;
+      if (editInput) {
+        editInput.focus();
+        editInput.select();
+        this.shouldFocusEdit = false;
+      }
+    }
+  }
+
+  startEdit(item: { id: number; title: string }) {
+    this.editingItemId = item.id;
+    this.editingItemText = item.title;
+    this.shouldFocusEdit = true;
+    this.cdr.detectChanges();
+  }
+
+  saveEdit() {
+    if (this.editingItemId && this.editingItemText.trim()) {
+      const item = this.inboxItems.find(i => i.id === this.editingItemId);
+      if (item) {
+        item.title = this.editingItemText.trim();
+      }
+    }
+    this.cancelEdit();
+  }
+
+  cancelEdit() {
+    this.editingItemId = null;
+    this.editingItemText = '';
+  }
+
+  deleteItem(itemId: number) {
+    const index = this.inboxItems.findIndex(i => i.id === itemId);
+    if (index > -1) {
+      this.inboxItems.splice(index, 1);
+      // If we're editing this item, cancel edit
+      if (this.editingItemId === itemId) {
+        this.cancelEdit();
+      }
+    }
+  }
+
+  isEditing(itemId: number): boolean {
+    return this.editingItemId === itemId;
   }
 }
