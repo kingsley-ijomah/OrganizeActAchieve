@@ -4,6 +4,11 @@ import { ProjectsComponent } from './projects/projects.component';
 
 export const routes: Routes = [
   {
+    path: '',
+    redirectTo: '/inbox',
+    pathMatch: 'full'
+  },
+  {
     path: 'inbox',
     component: InboxComponent
   },

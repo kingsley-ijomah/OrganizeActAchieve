@@ -1,0 +1,14 @@
+<nav class="bottom-nav">
+  <a
+    *ngFor="let item of navItems"
+    [routerLink]="item.path"
+    [routerLinkActive]="'active'"
+    class="nav-item"
+    [class.active]="isActive(item.path)"
+    [attr.aria-label]="item.label"
+  >
+    <span class="material-icons">{{ item.icon }}</span>
+    <span class="nav-label">{{ item.label }}</span>
+  </a>
+</nav>
+

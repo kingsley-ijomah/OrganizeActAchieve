@@ -4,6 +4,7 @@
   margin: 0 auto;
   background: #ffffff;
   min-height: 100vh;
+  padding-bottom: calc(80px + env(safe-area-inset-bottom, 0px));
 }
 
 .inbox-header {
