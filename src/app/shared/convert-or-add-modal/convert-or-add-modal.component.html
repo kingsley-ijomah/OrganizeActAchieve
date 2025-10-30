@@ -1,0 +1,28 @@
+<div class="modal-overlay" *ngIf="isOpen" (click)="onOverlayClick($event)">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2 class="modal-title">What would you like to do?</h2>
+      <button class="modal-close-btn" type="button" (click)="close.emit()" aria-label="Close">
+        <span class="material-icons">close</span>
+      </button>
+    </div>
+
+    <div class="task-preview" *ngIf="taskTitle">
+      <span class="material-icons">description</span>
+      <span class="task-preview-text">{{ taskTitle }}</span>
+    </div>
+
+    <div class="choice-actions">
+      <button class="choice-btn primary" type="button" (click)="convertToProject.emit()">
+        <span class="material-icons">drive_file_rename_outline</span>
+        <span>Turn into Project</span>
+      </button>
+      <button class="choice-btn" type="button" (click)="addToProject.emit()">
+        <span class="material-icons">playlist_add</span>
+        <span>Add to Existing Project</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+

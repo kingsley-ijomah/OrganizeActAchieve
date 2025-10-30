@@ -6,6 +6,7 @@ import { DataService, InboxItem, Project } from '../services/data.service';
 import { TaskItemComponent } from '../shared/task-item/task-item.component';
 import { ProjectSelectorComponent } from '../shared/project-selector/project-selector.component';
 import { LoadMoreButtonComponent } from '../shared/load-more-button/load-more-button.component';
+import { ConvertOrAddModalComponent } from '../shared/convert-or-add-modal/convert-or-add-modal.component';
 
 @Component({
   selector: 'app-inbox',
@@ -16,7 +17,8 @@ import { LoadMoreButtonComponent } from '../shared/load-more-button/load-more-bu
     FormsModule,
     TaskItemComponent,
     ProjectSelectorComponent,
-    LoadMoreButtonComponent
+    LoadMoreButtonComponent,
+    ConvertOrAddModalComponent
   ],
   templateUrl: './inbox.component.html',
   styleUrls: ['./inbox.component.scss']
@@ -30,6 +32,7 @@ export class InboxComponent {
   
   // Project selector state
   showProjectSelector = false;
+  showConvertOrAdd = false;
   selectedItem: InboxItem | null = null;
   
   inboxItems: InboxItem[] = [];
@@ -95,16 +98,44 @@ export class InboxComponent {
   }
 
   openProjectSelector(item: InboxItem) {
-    if (this.isEditing(item.id)) {
-      return;
-    }
+    if (this.isEditing(item.id)) { return; }
     this.selectedItem = item;
-    this.showProjectSelector = true;
+    this.showConvertOrAdd = true;
   }
 
   closeProjectSelector() {
     this.showProjectSelector = false;
     this.selectedItem = null;
+  }
+
+  closeConvertOrAdd() {
+    this.showConvertOrAdd = false;
+    // keep selectedItem to allow follow-up action
+  }
+
+  handleConvertToProject() {
+    if (!this.selectedItem) return;
+    const newId = Math.max(...this.projects.map(p => p.id), 0) + 1;
+    this.dataService.addProject({
+      id: newId,
+      name: this.selectedItem.title,
+      totalTasks: 0,
+      completedTasks: 0
+    });
+    // remove from inbox
+    const idx = this.inboxItems.findIndex(i => i.id === this.selectedItem!.id);
+    if (idx > -1) {
+      this.inboxItems.splice(idx, 1);
+      this.dataService.removeInboxItem(this.selectedItem.id);
+    }
+    this.projects = this.dataService.getProjects();
+    this.showConvertOrAdd = false;
+    this.selectedItem = null;
+  }
+
+  handleAddToProject() {
+    this.showConvertOrAdd = false;
+    this.showProjectSelector = true;
   }
 
   selectProject(project: Project) {

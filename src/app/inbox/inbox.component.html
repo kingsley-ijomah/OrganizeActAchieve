@@ -59,5 +59,13 @@
     (selectProject)="selectProject($event)"
   ></app-project-selector>
 
+  <app-convert-or-add-modal
+    [isOpen]="showConvertOrAdd"
+    [taskTitle]="selectedItem?.title || ''"
+    (close)="closeConvertOrAdd()"
+    (convertToProject)="handleConvertToProject()"
+    (addToProject)="handleAddToProject()"
+  ></app-convert-or-add-modal>
+
   <router-outlet></router-outlet>
 </div>
