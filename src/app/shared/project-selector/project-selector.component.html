@@ -1,0 +1,57 @@
+<div class="modal-overlay" *ngIf="isOpen" (click)="onOverlayClick($event)">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2 class="modal-title">Add to Project</h2>
+      <button class="modal-close-btn" type="button" (click)="onClose()" aria-label="Close">
+        <span class="material-icons">close</span>
+      </button>
+    </div>
+    
+    <div class="task-preview" *ngIf="selectedItem">
+      <span class="material-icons">description</span>
+      <span class="task-preview-text">{{ selectedItem.title }}</span>
+    </div>
+
+    <div class="project-search-wrapper">
+      <span class="material-icons search-icon">search</span>
+      <input 
+        class="project-search-input" 
+        type="text"
+        placeholder="Search projects…"
+        [(ngModel)]="projectSearchQuery"
+        (click)="$event.stopPropagation()"
+      />
+      <button 
+        class="clear-search-btn" 
+        type="button"
+        *ngIf="projectSearchQuery"
+        (click)="projectSearchQuery = ''"
+        aria-label="Clear search"
+      >
+        <span class="material-icons">close</span>
+      </button>
+    </div>
+
+    <div class="projects-list">
+      <div 
+        *ngFor="let project of filteredProjects" 
+        class="project-select-item"
+        (click)="onSelectProject(project)"
+      >
+        <div class="project-select-info">
+          <h3 class="project-select-name">{{ project.name }}</h3>
+          <div class="project-select-stats">
+            <span class="project-task-count">{{ project.totalTasks }} tasks</span>
+          </div>
+        </div>
+        <span class="material-icons">chevron_right</span>
+      </div>
+      
+      <div class="no-projects" *ngIf="filteredProjects.length === 0">
+        <span class="material-icons">folder</span>
+        <p>No projects found</p>
+      </div>
+    </div>
+  </div>
+</div>
+

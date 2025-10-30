@@ -1,0 +1,128 @@
+.project-card {
+  background: #ffffff;
+  border: 1.5px solid #e0e0e0;
+  border-radius: 12px;
+  padding: 16px;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.project-card:hover {
+  background: #fafafa;
+  border-color: #d0d0d0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.project-card:active {
+  transform: scale(0.98);
+}
+
+.project-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.project-name {
+  flex: 1;
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0;
+  color: #1a1a1a;
+  line-height: 1.4;
+  min-width: 0;
+  overflow-wrap: break-word;
+}
+
+.project-stats {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.task-count {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+  font-size: 14px;
+  color: #666666;
+}
+
+.count-number {
+  font-size: 18px;
+  font-weight: 600;
+  color: #4a90e2;
+}
+
+.count-separator {
+  color: #999999;
+}
+
+.count-total {
+  font-weight: 500;
+  color: #666666;
+}
+
+.count-label {
+  margin-left: 4px;
+  color: #999999;
+  font-size: 13px;
+}
+
+.progress-percentage {
+  font-size: 14px;
+  font-weight: 600;
+  color: #4a90e2;
+}
+
+.progress-bar-container {
+  width: 100%;
+  height: 8px;
+  background: #f0f0f0;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, #4a90e2 0%, #5aa0f2 100%);
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+
+@media (prefers-color-scheme: dark) {
+  .project-card {
+    background: #2a2a2a;
+    border-color: #3a3a3a;
+  }
+  .project-card:hover {
+    background: #333333;
+    border-color: #444444;
+  }
+  .project-name {
+    color: #ffffff;
+  }
+  .task-count {
+    color: #999999;
+  }
+  .count-number {
+    color: #5aa0f2;
+  }
+  .count-separator,
+  .count-total {
+    color: #888888;
+  }
+  .count-label {
+    color: #777777;
+  }
+  .progress-percentage {
+    color: #5aa0f2;
+  }
+  .progress-bar-container {
+    background: #333333;
+  }
+}

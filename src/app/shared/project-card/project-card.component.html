@@ -1,0 +1,19 @@
+<div class="project-card">
+  <div class="project-header">
+    <h3 class="project-name">{{ project.name }}</h3>
+  </div>
+  
+  <div class="project-stats">
+    <div class="task-count">
+      <span class="count-number">{{ project.completedTasks }}</span>
+      <span class="count-separator">/</span>
+      <span class="count-total">{{ project.totalTasks }}</span>
+      <span class="count-label">tasks</span>
+    </div>
+    <div class="progress-percentage">{{ progress }}%</div>
+  </div>
+
+  <div class="progress-bar-container">
+    <div class="progress-bar" [style.width.%]="progress"></div>
+  </div>
+</div>

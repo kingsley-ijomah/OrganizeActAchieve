@@ -1,0 +1,71 @@
+.load-more-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 12px 16px;
+  margin-top: 12px;
+  margin-bottom: calc(100px + env(safe-area-inset-bottom, 0px));
+  background: transparent;
+  border: 1.5px solid #e0e0e0;
+  border-radius: 12px;
+  color: #4a90e2;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: inherit;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.load-more-btn:hover {
+  background: #f0f7ff;
+  border-color: #4a90e2;
+}
+
+.load-more-btn:active {
+  transform: scale(0.98);
+  background: #e6f2ff;
+}
+
+.load-more-btn .material-icons {
+  font-size: 20px;
+  transition: transform 0.2s ease;
+}
+
+.load-more-btn:hover .material-icons {
+  transform: translateY(2px);
+}
+
+.load-more-text {
+  font-weight: 600;
+}
+
+.load-more-count {
+  color: #999999;
+  font-size: 14px;
+  font-weight: 400;
+}
+
+// Dark mode support
+@media (prefers-color-scheme: dark) {
+  .load-more-btn {
+    border-color: #3a3a3a;
+    color: #5aa0f2;
+  }
+
+  .load-more-btn:hover {
+    background: #2a2a3a;
+    border-color: #5aa0f2;
+  }
+
+  .load-more-btn:active {
+    background: #333340;
+  }
+
+  .load-more-count {
+    color: #888888;
+  }
+}
+

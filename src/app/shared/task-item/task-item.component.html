@@ -1,0 +1,41 @@
+<li 
+  class="inbox-item" 
+  [class.editing]="isEditing"
+  (click)="onSelect($event)"
+>
+  <button class="item-checkbox" type="button" aria-label="Toggle task completion" *ngIf="!isEditing">
+    <span class="material-icons checkbox-icon">radio_button_unchecked</span>
+  </button>
+  
+  <div class="item-content" *ngIf="!isEditing">
+    <span class="item-title">{{ item.title }}</span>
+    <div class="item-actions">
+      <button class="action-btn edit-btn" type="button" (click)="onEdit($event)" aria-label="Edit task">
+        <span class="material-icons">edit</span>
+      </button>
+      <button class="action-btn delete-btn" type="button" (click)="onDelete($event)" aria-label="Delete task">
+        <span class="material-icons">delete</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="item-edit" *ngIf="isEditing">
+    <input 
+      class="edit-input" 
+      type="text" 
+      [(ngModel)]="editingText"
+      (keydown.enter)="onSave()"
+      (keydown.escape)="cancelEdit()"
+      #editInput
+    />
+    <div class="edit-actions">
+      <button class="action-btn save-btn" type="button" (click)="onSave()" aria-label="Save changes">
+        <span class="material-icons">check</span>
+      </button>
+      <button class="action-btn cancel-btn" type="button" (click)="cancelEdit()" aria-label="Cancel editing">
+        <span class="material-icons">close</span>
+      </button>
+    </div>
+  </div>
+</li>
+

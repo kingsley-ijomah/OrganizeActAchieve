@@ -3,11 +3,13 @@ import { CommonModule } from '@angular/common';
 import { RouterOutlet } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { DataService, Project } from '../services/data.service';
+import { ProjectCardComponent } from '../shared/project-card/project-card.component';
+import { LoadMoreButtonComponent } from '../shared/load-more-button/load-more-button.component';
 
 @Component({
   selector: 'app-projects',
   standalone: true,
-  imports: [CommonModule, RouterOutlet, FormsModule],
+  imports: [CommonModule, RouterOutlet, FormsModule, ProjectCardComponent, LoadMoreButtonComponent],
   templateUrl: './projects.component.html',
   styleUrls: ['./projects.component.scss']
 })

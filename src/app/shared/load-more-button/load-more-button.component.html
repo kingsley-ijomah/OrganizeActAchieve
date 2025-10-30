@@ -1,0 +1,12 @@
+<button 
+  class="load-more-btn" 
+  type="button"
+  *ngIf="hasMore"
+  (click)="onLoadMore()"
+  aria-label="Load more items"
+>
+  <span class="load-more-text">Load More</span>
+  <span class="load-more-count">({{ remainingCount }} remaining)</span>
+  <span class="material-icons">expand_more</span>
+</button>
+

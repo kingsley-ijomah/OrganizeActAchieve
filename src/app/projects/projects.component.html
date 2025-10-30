@@ -59,41 +59,18 @@
   </div>
 
   <div class="projects-grid">
-    <div *ngFor="let project of displayedProjects" class="project-card">
-      <div class="project-header">
-        <h3 class="project-name">{{ project.name }}</h3>
-      </div>
-      
-      <div class="project-stats">
-        <div class="task-count">
-          <span class="count-number">{{ project.completedTasks }}</span>
-          <span class="count-separator">/</span>
-          <span class="count-total">{{ project.totalTasks }}</span>
-          <span class="count-label">tasks</span>
-        </div>
-        <div class="progress-percentage">{{ getProgress(project) }}%</div>
-      </div>
-
-      <div class="progress-bar-container">
-        <div 
-          class="progress-bar" 
-          [style.width.%]="getProgress(project)"
-        ></div>
-      </div>
-    </div>
+    <app-project-card 
+      *ngFor="let project of displayedProjects" 
+      [project]="project"
+      (delete)="deleteProject($event)"
+    ></app-project-card>
   </div>
 
-  <button 
-    class="load-more-btn" 
-    type="button"
-    *ngIf="hasMoreProjects"
-    (click)="loadMore()"
-    aria-label="Load more projects"
-  >
-    <span class="load-more-text">Load More</span>
-    <span class="load-more-count">({{ remainingCount }} remaining)</span>
-    <span class="material-icons">expand_more</span>
-  </button>
+  <app-load-more-button 
+    [hasMore]="hasMoreProjects"
+    [remainingCount]="remainingCount"
+    (loadMore)="loadMore()"
+  ></app-load-more-button>
 
   <div class="empty-state" *ngIf="filteredProjects.length === 0 && searchQuery">
     <span class="material-icons">search_off</span>
