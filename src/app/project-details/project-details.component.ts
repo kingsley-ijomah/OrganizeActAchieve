@@ -4,12 +4,13 @@ import { ActivatedRoute, RouterModule } from '@angular/router';
 import { ProgressStatComponent } from '../shared/progress-stat/progress-stat.component';
 import { FormsModule } from '@angular/forms';
 import { NumberAdjustModalComponent } from '../shared/number-adjust-modal/number-adjust-modal.component';
+import { TaskEditModalComponent, TaskEditModel } from '../shared/task-edit-modal/task-edit-modal.component';
 import { DataService, Project, ProjectTask } from '../services/data.service';
 
 @Component({
   selector: 'app-project-details',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule, ProgressStatComponent, NumberAdjustModalComponent],
+  imports: [CommonModule, RouterModule, FormsModule, ProgressStatComponent, NumberAdjustModalComponent, TaskEditModalComponent],
   templateUrl: './project-details.component.html',
   styleUrl: './project-details.component.scss'
 })
@@ -138,4 +139,39 @@ export class ProjectDetailsComponent {
 
   closeAdjust() { this.showAdjust = false; this.adjustApply = null; }
   saveAdjust(val: number) { this.adjustValue = val; if (this.adjustApply) this.adjustApply(); this.closeAdjust(); }
+
+  // view/edit task modal
+  taskModalOpen = false;
+  taskModel: TaskEditModel = { title: '' };
+  taskModelTarget: ProjectTask | null = null;
+
+  openTaskModal(task: ProjectTask) {
+    this.taskModelTarget = task;
+    this.taskModel = {
+      title: task.title,
+      description: task.description,
+      context: task.context,
+      status: task.status,
+      dueDate: task.dueDate ? task.dueDate.substring(0,10) : '',
+      priority: task.priority,
+      pomodorosPlanned: task.pomodorosPlanned || 0,
+      pomodorosDone: task.pomodorosDone || 0,
+    };
+    this.taskModalOpen = true;
+  }
+
+  closeTaskModal() { this.taskModalOpen = false; this.taskModelTarget = null; }
+  saveTaskModal(model: TaskEditModel) {
+    if (!this.taskModelTarget) return;
+    const t = this.taskModelTarget;
+    t.title = model.title;
+    t.description = model.description;
+    t.context = model.context;
+    t.status = model.status ? model.status : undefined;
+    t.priority = model.priority;
+    t.dueDate = model.dueDate ? new Date(model.dueDate).toISOString() : undefined;
+    t.pomodorosPlanned = model.pomodorosPlanned || 0;
+    t.pomodorosDone = model.pomodorosDone || 0;
+    this.closeTaskModal();
+  }
 }

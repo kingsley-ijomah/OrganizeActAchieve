@@ -37,6 +37,7 @@
         <div class="task-main">
           <div class="title-row">
             <span class="task-title">{{ t.title }}</span>
+            <button class="view-link" type="button" (click)="openTaskModal(t)">View</button>
             <div class="chips">
               <span *ngIf="t.context" class="chip">&#64;{{ t.context }}</span>
               <span *ngIf="t.priority" class="chip priority-{{ t.priority }}">{{ t.priority | titlecase }}</span>
@@ -77,3 +78,10 @@
   (save)="saveAdjust($event)"
   (close)="closeAdjust()"
 ></app-number-adjust-modal>
+
+<app-task-edit-modal
+  [isOpen]="taskModalOpen"
+  [model]="taskModel"
+  (save)="saveTaskModal($event)"
+  (close)="closeTaskModal()"
+></app-task-edit-modal>
