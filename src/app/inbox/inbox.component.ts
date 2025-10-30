@@ -41,9 +41,11 @@ export class InboxComponent {
   showConvertOrAdd = false;
   showTaskDetails = false;
   showConfirmDone = false;
+  showConfirmDelete = false;
   selectedItem: InboxItem | null = null;
   pendingDetails: TaskDetails | null = null;
   pendingCompleteId: number | null = null;
+  pendingDeleteId: number | null = null;
   
   inboxItems: InboxItem[] = [];
   projects: Project[] = [];
@@ -131,6 +133,18 @@ export class InboxComponent {
   }
 
   deleteItem(itemId: number) {
+    this.pendingDeleteId = itemId;
+    this.showConfirmDelete = true;
+  }
+
+  cancelDelete() {
+    this.showConfirmDelete = false;
+    this.pendingDeleteId = null;
+  }
+
+  confirmDelete() {
+    if (this.pendingDeleteId == null) return;
+    const itemId = this.pendingDeleteId;
     const index = this.inboxItems.findIndex(i => i.id === itemId);
     if (index > -1) {
       this.inboxItems.splice(index, 1);
@@ -139,6 +153,8 @@ export class InboxComponent {
         this.cancelEdit();
       }
     }
+    this.showConfirmDelete = false;
+    this.pendingDeleteId = null;
   }
 
   completeItem(itemId: number) {
