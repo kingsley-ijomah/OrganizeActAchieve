@@ -18,6 +18,7 @@ export interface ProjectCardData {
 export class ProjectCardComponent {
   @Input() project!: ProjectCardData;
   @Output() delete = new EventEmitter<number>();
+  @Output() open = new EventEmitter<void>();
 
   get progress(): number {
     if (!this.project || this.project.totalTasks === 0) return 0;
@@ -26,5 +27,9 @@ export class ProjectCardComponent {
 
   onDelete() {
     this.delete.emit(this.project.id);
+  }
+
+  onOpen() {
+    this.open.emit();
   }
 }

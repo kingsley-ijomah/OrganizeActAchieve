@@ -62,6 +62,7 @@
     <app-project-card 
       *ngFor="let project of displayedProjects" 
       [project]="project"
+      (open)="openDetails(project)"
       (delete)="deleteProject($event)"
     ></app-project-card>
   </div>
@@ -71,6 +72,7 @@
     [remainingCount]="remainingCount"
     (loadMore)="loadMore()"
   ></app-load-more-button>
+
 
   <div class="empty-state" *ngIf="filteredProjects.length === 0 && searchQuery">
     <span class="material-icons">search_off</span>

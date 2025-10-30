@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterOutlet } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { DataService, Project } from '../services/data.service';
+import { Router } from '@angular/router';
 import { ProjectCardComponent } from '../shared/project-card/project-card.component';
 import { LoadMoreButtonComponent } from '../shared/load-more-button/load-more-button.component';
 
@@ -21,10 +22,10 @@ export class ProjectsComponent implements OnInit {
   displayedItemsCount: number = 8;
   
   projects: Project[] = [];
-
-  constructor(private dataService: DataService) {
+  constructor(private dataService: DataService, private router: Router) {
     this.projects = this.dataService.getProjects();
   }
+
 
   private mockProjects: Project[] = [
     { id: 1, name: 'Website Redesign', totalTasks: 15, completedTasks: 8 },
@@ -119,5 +120,9 @@ export class ProjectsComponent implements OnInit {
   deleteProject(projectId: number): void {
     this.dataService.deleteProject(projectId);
     this.projects = this.dataService.getProjects();
+  }
+
+  openDetails(project: Project) {
+    this.router.navigate(['/projects', project.id]);
   }
 }

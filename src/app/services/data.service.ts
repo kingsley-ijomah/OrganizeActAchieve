@@ -13,6 +13,20 @@ export interface Project {
   completedTasks: number;
 }
 
+export interface ProjectTask {
+  id: number;
+  projectId: number;
+  title: string;
+  description?: string;
+  status?: 'not_started' | 'in_progress' | 'completed' | 'deferred';
+  context?: 'computer' | 'phone' | 'home' | 'office' | '';
+  priority?: 'high' | 'normal' | 'low' | '';
+  dueDate?: string; // ISO
+  pomodorosPlanned?: number;
+  pomodorosDone?: number;
+  createdAt?: string;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -78,6 +92,36 @@ export class DataService {
     { id: 20, name: 'Testing Framework', totalTasks: 15, completedTasks: 12 },
   ];
 
+  // Simple in-memory task store per project
+  private projectIdToTasks: Record<number, ProjectTask[]> = {
+    1: [
+      { id: 1, projectId: 1, title: 'Audit current site', status: 'in_progress', context: 'computer', priority: 'high', dueDate: this.isoOffset(1), pomodorosPlanned: 6, pomodorosDone: 2, createdAt: this.isoOffset(-2) },
+      { id: 2, projectId: 1, title: 'Define color palette', status: 'not_started', context: 'computer', priority: 'normal', dueDate: this.isoOffset(5), pomodorosPlanned: 3, pomodorosDone: 0, createdAt: this.isoOffset(-1) },
+      { id: 5, projectId: 1, title: 'User interviews', status: 'not_started', context: 'phone', priority: 'low', dueDate: this.isoOffset(0), pomodorosPlanned: 2, pomodorosDone: 0, createdAt: this.isoOffset(-1) },
+      { id: 6, projectId: 1, title: 'Create wireframes', status: 'not_started', context: 'computer', priority: 'high', dueDate: this.isoOffset(3), pomodorosPlanned: 4, pomodorosDone: 0, createdAt: this.isoOffset(-1) },
+      { id: 7, projectId: 1, title: 'Prep stakeholder deck', status: 'in_progress', context: 'computer', priority: 'normal', pomodorosPlanned: 3, pomodorosDone: 1, createdAt: this.isoOffset(-2) },
+      { id: 8, projectId: 1, title: 'Export design tokens', status: 'completed', context: 'computer', priority: 'normal', dueDate: this.isoOffset(-1), pomodorosPlanned: 1, pomodorosDone: 1, createdAt: this.isoOffset(-3) },
+    ],
+    2: [
+      { id: 3, projectId: 2, title: 'Auth flow', status: 'completed', context: 'computer', priority: 'high', dueDate: this.isoOffset(-1), pomodorosPlanned: 4, pomodorosDone: 4, createdAt: this.isoOffset(-7) },
+      { id: 4, projectId: 2, title: 'Onboarding screens', status: 'not_started', context: 'phone', priority: 'normal', pomodorosPlanned: 2, pomodorosDone: 0, createdAt: this.isoOffset(-3) },
+      { id: 9, projectId: 2, title: 'Implement dark mode', status: 'not_started', context: 'computer', priority: 'low', dueDate: this.isoOffset(0), pomodorosPlanned: 2, pomodorosDone: 0, createdAt: this.isoOffset(-1) },
+      { id: 10, projectId: 2, title: 'Crash analytics wiring', status: 'not_started', context: 'computer', priority: 'high', dueDate: this.isoOffset(6), pomodorosPlanned: 3, pomodorosDone: 0, createdAt: this.isoOffset(-1) },
+      { id: 11, projectId: 2, title: 'App icon variants', status: 'in_progress', context: 'computer', priority: 'normal', pomodorosPlanned: 2, pomodorosDone: 1, createdAt: this.isoOffset(-2) },
+    ],
+    3: [
+      { id: 12, projectId: 3, title: 'Audience segments', status: 'not_started', context: 'computer', priority: 'high', dueDate: this.isoOffset(2), pomodorosPlanned: 3, pomodorosDone: 0, createdAt: this.isoOffset(-1) },
+      { id: 13, projectId: 3, title: 'Draft email copy', status: 'not_started', context: 'computer', priority: 'normal', dueDate: this.isoOffset(0), pomodorosPlanned: 2, pomodorosDone: 0, createdAt: this.isoOffset(-1) },
+      { id: 14, projectId: 3, title: 'Set up UTM links', status: 'completed', context: 'computer', priority: 'low', pomodorosPlanned: 1, pomodorosDone: 1, createdAt: this.isoOffset(-4) },
+    ],
+  };
+
+  private isoOffset(days: number): string {
+    const d = new Date();
+    d.setDate(d.getDate() + days);
+    return d.toISOString();
+  }
+
   getInboxItems(): InboxItem[] {
     // Ensure createdAt exists for legacy items
     this.inboxItems.forEach(i => { if (!i.createdAt) i.createdAt = new Date().toISOString(); });
@@ -86,6 +130,20 @@ export class DataService {
 
   getProjects(): Project[] {
     return this.projects;
+  }
+
+  getProjectTasks(projectId: number): ProjectTask[] {
+    return this.projectIdToTasks[projectId] || [];
+  }
+
+  addTaskToProjectWithDetails(projectId: number, task: Omit<ProjectTask, 'id' | 'projectId'>) {
+    const list = this.projectIdToTasks[projectId] || (this.projectIdToTasks[projectId] = []);
+    const newId = Math.max(0, ...Object.values(this.projectIdToTasks).flat().map(t => t.id)) + 1;
+    list.push({ id: newId, projectId, title: task.title, status: task.status, description: task.description, context: task.context, priority: task.priority, dueDate: task.dueDate, pomodorosPlanned: task.pomodorosPlanned, pomodorosDone: task.pomodorosDone, createdAt: new Date().toISOString() });
+    const project = this.projects.find(p => p.id === projectId);
+    if (project) {
+      project.totalTasks = (project.totalTasks || 0) + 1;
+    }
   }
 
   removeInboxItem(itemId: number): void {

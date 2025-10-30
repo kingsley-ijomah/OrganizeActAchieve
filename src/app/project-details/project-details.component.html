@@ -1,0 +1,55 @@
+<div class="project-details-container" *ngIf="project; else notfound">
+  <header class="header">
+    <a routerLink="/projects" class="back-link"><span class="material-icons">arrow_back</span> Projects</a>
+    <h1 class="title">{{ project.name }}</h1>
+  </header>
+
+  <section class="summary">
+    <div class="stat">
+      <span class="label">Tasks</span>
+      <span class="value">{{ project.completedTasks }} / {{ project.totalTasks }}</span>
+    </div>
+  </section>
+
+  <section class="tasks">
+    <div class="filter-bar">
+      <button type="button" class="seg-btn" [class.active]="filter==='all'" (click)="filter='all'">All</button>
+      <button type="button" class="seg-btn" [class.active]="filter==='today'" (click)="filter='today'">Today</button>
+      <button type="button" class="seg-btn" [class.active]="filter==='week'" (click)="filter='week'">This Week</button>
+      <button type="button" class="seg-btn" [class.active]="filter==='no_due'" (click)="filter='no_due'">No Due</button>
+      <button type="button" class="seg-btn" [class.active]="filter==='completed'" (click)="filter='completed'">Completed</button>
+    </div>
+    <ul class="task-list">
+      <li *ngFor="let t of filteredTasks" class="task-item" [class.completed]="t.status==='completed'">
+        <button class="icon-btn" type="button" (click)="toggleComplete(t)"><span class="material-icons">{{ t.status === 'completed' ? 'check_circle' : 'radio_button_unchecked' }}</span></button>
+        <div class="task-main">
+          <div class="title-row">
+            <span class="task-title">{{ t.title }}</span>
+            <div class="chips">
+              <span *ngIf="t.context" class="chip">&#64;{{ t.context }}</span>
+              <span *ngIf="t.priority" class="chip priority-{{ t.priority }}">{{ t.priority | titlecase }}</span>
+              <span *ngIf="t.dueDate && filter==='today'" class="chip due">Today</span>
+              <span *ngIf="t.dueDate && filter==='week'" class="chip due">{{ (t.dueDate | date:'EEE') }}</span>
+              <span *ngIf="t.pomodorosPlanned" class="chip pomo">{{ t.pomodorosDone || 0 }}/{{ t.pomodorosPlanned }} × 25</span>
+            </div>
+          </div>
+          <div class="actions" *ngIf="filter!=='completed'">
+            <button class="mini-btn" type="button" title="Defer 1 day" (click)="deferTask(t,1)"><span class="material-icons">schedule</span>+1d</button>
+            <button class="mini-btn" type="button" title="Add Pomodoro" (click)="incPomodoro(t)"><span class="material-icons">timer</span>+1</button>
+            <button class="mini-btn" type="button" title="Log Pomodoro" (click)="incPomodoroDone(t)"><span class="material-icons">check</span>+1</button>
+          </div>
+        </div>
+      </li>
+      <li *ngIf="!filteredTasks.length" class="empty">No tasks for this filter.</li>
+    </ul>
+  </section>
+</div>
+
+<ng-template #notfound>
+  <div class="not-found">
+    <a routerLink="/projects" class="back-link"><span class="material-icons">arrow_back</span> Projects</a>
+    <p>Project not found.</p>
+  </div>
+</ng-template>
+
+<div class="bottom-spacer"></div>
