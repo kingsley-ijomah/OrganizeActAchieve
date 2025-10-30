@@ -7,6 +7,7 @@ import { TaskItemComponent } from '../shared/task-item/task-item.component';
 import { ProjectSelectorComponent } from '../shared/project-selector/project-selector.component';
 import { LoadMoreButtonComponent } from '../shared/load-more-button/load-more-button.component';
 import { ConvertOrAddModalComponent } from '../shared/convert-or-add-modal/convert-or-add-modal.component';
+import { ConfirmModalComponent } from '../shared/confirm-modal/confirm-modal.component';
 import { TaskDetailsModalComponent, TaskDetails } from '../shared/task-details-modal/task-details-modal.component';
 
 @Component({
@@ -20,7 +21,8 @@ import { TaskDetailsModalComponent, TaskDetails } from '../shared/task-details-m
     ProjectSelectorComponent,
     LoadMoreButtonComponent,
     ConvertOrAddModalComponent,
-    TaskDetailsModalComponent
+    TaskDetailsModalComponent,
+    ConfirmModalComponent
   ],
   templateUrl: './inbox.component.html',
   styleUrls: ['./inbox.component.scss']
@@ -36,8 +38,10 @@ export class InboxComponent {
   showProjectSelector = false;
   showConvertOrAdd = false;
   showTaskDetails = false;
+  showConfirmDone = false;
   selectedItem: InboxItem | null = null;
   pendingDetails: TaskDetails | null = null;
+  pendingCompleteId: number | null = null;
   
   inboxItems: InboxItem[] = [];
   projects: Project[] = [];
@@ -95,6 +99,31 @@ export class InboxComponent {
         this.cancelEdit();
       }
     }
+  }
+
+  completeItem(itemId: number) {
+    this.pendingCompleteId = itemId;
+    this.showConfirmDone = true;
+  }
+
+  cancelComplete() {
+    this.showConfirmDone = false;
+    this.pendingCompleteId = null;
+  }
+
+  confirmComplete() {
+    if (this.pendingCompleteId == null) return;
+    const itemId = this.pendingCompleteId;
+    const index = this.inboxItems.findIndex(i => i.id === itemId);
+    if (index > -1) {
+      this.inboxItems.splice(index, 1);
+      this.dataService.removeInboxItem(itemId);
+      if (this.editingItemId === itemId) {
+        this.cancelEdit();
+      }
+    }
+    this.showConfirmDone = false;
+    this.pendingCompleteId = null;
   }
 
   isEditing(itemId: number): boolean {

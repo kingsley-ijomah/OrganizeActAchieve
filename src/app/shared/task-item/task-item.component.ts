@@ -18,6 +18,7 @@ export class TaskItemComponent implements AfterViewChecked {
   @Output() save = new EventEmitter<{ id: number; title: string }>();
   @Output() cancel = new EventEmitter<void>();
   @Output() select = new EventEmitter<InboxItem>();
+  @Output() complete = new EventEmitter<number>();
 
   @ViewChild('editInput', { static: false }) editInputRef!: ElementRef<HTMLInputElement>;
   editingText: string = '';
@@ -64,6 +65,11 @@ export class TaskItemComponent implements AfterViewChecked {
     if (!this.isEditing) {
       this.select.emit(this.item);
     }
+  }
+
+  onComplete(event: Event) {
+    event.stopPropagation();
+    this.complete.emit(this.item.id);
   }
 }
 

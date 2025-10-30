@@ -1,0 +1,21 @@
+<div class="modal-overlay" *ngIf="isOpen" (click)="onOverlayClick($event)">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2 class="modal-title">{{ title }}</h2>
+      <button class="modal-close-btn" type="button" (click)="cancel.emit()" aria-label="Close">
+        <span class="material-icons">close</span>
+      </button>
+    </div>
+
+    <div class="modal-body">
+      <p class="modal-message">{{ message }}</p>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn secondary" type="button" (click)="cancel.emit()">{{ cancelLabel }}</button>
+      <button class="btn danger" type="button" (click)="confirm.emit()">{{ confirmLabel }}</button>
+    </div>
+  </div>
+  </div>
+
+

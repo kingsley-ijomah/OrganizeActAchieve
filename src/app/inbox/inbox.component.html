@@ -38,6 +38,7 @@
         [isEditing]="isEditing(item.id)"
         (edit)="startEdit($event)"
         (delete)="deleteItem($event)"
+        (complete)="completeItem($event)"
         (save)="saveEdit($event)"
         (cancel)="cancelEdit()"
         (select)="openProjectSelector($event)"
@@ -73,6 +74,16 @@
     (close)="closeTaskDetails()"
     (save)="saveTaskDetails($event)"
   ></app-task-details-modal>
+
+  <app-confirm-modal
+    [isOpen]="showConfirmDone"
+    title="Mark as done?"
+    message="This will remove the item from your Inbox. You can add it again later if needed."
+    confirmLabel="Mark Done"
+    cancelLabel="Cancel"
+    (confirm)="confirmComplete()"
+    (cancel)="cancelComplete()"
+  ></app-confirm-modal>
 
   <router-outlet></router-outlet>
 </div>

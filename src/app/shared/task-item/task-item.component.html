@@ -3,7 +3,7 @@
   [class.editing]="isEditing"
   (click)="onSelect($event)"
 >
-  <button class="item-checkbox" type="button" aria-label="Toggle task completion" *ngIf="!isEditing">
+  <button class="item-checkbox" type="button" aria-label="Mark task as done" *ngIf="!isEditing" (click)="onComplete($event)">
     <span class="material-icons checkbox-icon">radio_button_unchecked</span>
   </button>
   
