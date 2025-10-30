@@ -1,0 +1,22 @@
+<div class="modal-overlay" *ngIf="isOpen" (click)="onOverlayClick($event)">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2 class="modal-title">{{ title }}</h2>
+      <button class="modal-close-btn" type="button" (click)="close.emit()"><span class="material-icons">close</span></button>
+    </div>
+    <div class="modal-body">
+      <div class="label">{{ label }}</div>
+      <div class="adjust">
+        <button class="btn" type="button" (click)="dec()">−</button>
+        <div class="value">{{ value }}{{ suffix }}</div>
+        <button class="btn" type="button" (click)="inc()">+</button>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn secondary" type="button" (click)="close.emit()">Cancel</button>
+      <button class="btn primary" type="button" (click)="save.emit(value)">Save</button>
+    </div>
+  </div>
+</div>
+
+

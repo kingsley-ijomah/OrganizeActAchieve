@@ -1,0 +1,12 @@
+<div class="progress-card">
+  <div class="stat-header">
+    <span class="label">{{ label }}</span>
+    <span class="value">{{ completed }} / {{ total }}</span>
+  </div>
+  <div class="bar">
+    <div class="fill" [style.width.%]="percent"></div>
+  </div>
+  <div class="percent">{{ percent }}%</div>
+</div>
+
+

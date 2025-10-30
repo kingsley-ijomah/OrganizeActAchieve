@@ -1,14 +1,26 @@
 <div class="project-details-container" *ngIf="project; else notfound">
   <header class="header">
     <a routerLink="/projects" class="back-link"><span class="material-icons">arrow_back</span> Projects</a>
-    <h1 class="title">{{ project.name }}</h1>
+    <ng-container *ngIf="!editingTitle; else editing">
+      <h1 class="title" (click)="startEditTitle()" title="Click to edit">{{ project.name }}</h1>
+    </ng-container>
+    <ng-template #editing>
+      <div class="title-edit">
+        <input class="title-input" [(ngModel)]="editableTitle" (keydown.enter)="saveTitle()" (keydown.escape)="cancelEditTitle()" />
+        <div class="title-actions">
+          <button class="mini-btn" type="button" (click)="saveTitle()"><span class="material-icons">check</span></button>
+          <button class="mini-btn" type="button" (click)="cancelEditTitle()"><span class="material-icons">close</span></button>
+        </div>
+      </div>
+    </ng-template>
   </header>
 
   <section class="summary">
-    <div class="stat">
-      <span class="label">Tasks</span>
-      <span class="value">{{ project.completedTasks }} / {{ project.totalTasks }}</span>
-    </div>
+    <app-progress-stat
+      label="Tasks"
+      [completed]="project.completedTasks"
+      [total]="project.totalTasks"
+    ></app-progress-stat>
   </section>
 
   <section class="tasks">
@@ -28,15 +40,14 @@
             <div class="chips">
               <span *ngIf="t.context" class="chip">&#64;{{ t.context }}</span>
               <span *ngIf="t.priority" class="chip priority-{{ t.priority }}">{{ t.priority | titlecase }}</span>
-              <span *ngIf="t.dueDate && filter==='today'" class="chip due">Today</span>
-              <span *ngIf="t.dueDate && filter==='week'" class="chip due">{{ (t.dueDate | date:'EEE') }}</span>
               <span *ngIf="t.pomodorosPlanned" class="chip pomo">{{ t.pomodorosDone || 0 }}/{{ t.pomodorosPlanned }} × 25</span>
+              <span *ngIf="t.dueDate" class="chip due">{{ isToday(t.dueDate) ? 'Today' : (t.dueDate | date:'MMM d') }}</span>
             </div>
           </div>
           <div class="actions" *ngIf="filter!=='completed'">
-            <button class="mini-btn" type="button" title="Defer 1 day" (click)="deferTask(t,1)"><span class="material-icons">schedule</span>+1d</button>
-            <button class="mini-btn" type="button" title="Add Pomodoro" (click)="incPomodoro(t)"><span class="material-icons">timer</span>+1</button>
-            <button class="mini-btn" type="button" title="Log Pomodoro" (click)="incPomodoroDone(t)"><span class="material-icons">check</span>+1</button>
+            <button class="mini-btn" type="button" title="Defer" (click)="openAdjustForDefer(t)"><span class="material-icons">schedule</span></button>
+            <button class="mini-btn" type="button" title="Planned Pomodoros" (click)="openAdjustForPlanned(t)"><span class="material-icons">timer</span></button>
+            <button class="mini-btn" type="button" title="Completed Pomodoros" (click)="openAdjustForDone(t)"><span class="material-icons">check</span></button>
           </div>
         </div>
       </li>
@@ -53,3 +64,16 @@
 </ng-template>
 
 <div class="bottom-spacer"></div>
+
+<app-number-adjust-modal
+  [isOpen]="showAdjust"
+  [title]="adjustTitle"
+  [label]="adjustLabel"
+  [value]="adjustValue"
+  [min]="adjustMin"
+  [max]="adjustMax"
+  [step]="adjustStep"
+  [suffix]="adjustSuffix"
+  (save)="saveAdjust($event)"
+  (close)="closeAdjust()"
+></app-number-adjust-modal>

@@ -1,12 +1,15 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterModule } from '@angular/router';
+import { ProgressStatComponent } from '../shared/progress-stat/progress-stat.component';
+import { FormsModule } from '@angular/forms';
+import { NumberAdjustModalComponent } from '../shared/number-adjust-modal/number-adjust-modal.component';
 import { DataService, Project, ProjectTask } from '../services/data.service';
 
 @Component({
   selector: 'app-project-details',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, FormsModule, ProgressStatComponent, NumberAdjustModalComponent],
   templateUrl: './project-details.component.html',
   styleUrl: './project-details.component.scss'
 })
@@ -16,6 +19,8 @@ export class ProjectDetailsComponent {
 
   project: Project | null = null;
   tasks: ProjectTask[] = [];
+  editingTitle = false;
+  editableTitle = '';
 
   // Derived sections
   filter: 'all' | 'today' | 'week' | 'no_due' | 'completed' = 'all';
@@ -41,12 +46,13 @@ export class ProjectDetailsComponent {
       const project = this.data.getProjects().find(p => p.id === id) || null;
       this.project = project;
       if (project) {
+        this.editableTitle = project.name;
         this.tasks = this.data.getProjectTasks(project.id);
       }
     }
   }
 
-  private isToday(dateIso?: string): boolean {
+  isToday(dateIso?: string): boolean {
     if (!dateIso) return false;
     const d = new Date(dateIso); const n = new Date();
     return d.getFullYear() === n.getFullYear() && d.getMonth() === n.getMonth() && d.getDate() === n.getDate();
@@ -75,4 +81,61 @@ export class ProjectDetailsComponent {
   incPomodoro(task: ProjectTask) { task.pomodorosPlanned = (task.pomodorosPlanned || 0) + 1; }
   decPomodoro(task: ProjectTask) { task.pomodorosPlanned = Math.max(0, (task.pomodorosPlanned || 0) - 1); }
   incPomodoroDone(task: ProjectTask) { task.pomodorosDone = (task.pomodorosDone || 0) + 1; }
+
+  startEditTitle() { this.editingTitle = true; }
+  cancelEditTitle() { this.editingTitle = false; this.editableTitle = this.project?.name || ''; }
+  saveTitle() {
+    if (this.project && this.editableTitle.trim()) {
+      this.data.updateProjectName(this.project.id, this.editableTitle.trim());
+      this.project.name = this.editableTitle.trim();
+      this.editingTitle = false;
+    }
+  }
+
+  // adjust modal state
+  showAdjust = false;
+  adjustTitle = '';
+  adjustLabel = '';
+  adjustMin = 0;
+  adjustMax = 100;
+  adjustStep = 1;
+  adjustSuffix = '';
+  adjustValue = 0;
+  adjustApply: (() => void) | null = null;
+
+  openAdjustForDefer(task: ProjectTask) {
+    this.adjustTitle = 'Defer Task';
+    this.adjustLabel = 'Days from today';
+    // compute current offset
+    const today = new Date(); today.setHours(0,0,0,0);
+    const curr = task.dueDate ? Math.round((new Date(task.dueDate).getTime() - today.getTime()) / (1000*60*60*24)) : 0;
+    this.adjustMin = -30; this.adjustMax = 365; this.adjustStep = 1; this.adjustSuffix=' d';
+    this.adjustValue = curr;
+    this.adjustApply = () => {
+      const d = new Date(); d.setHours(0,0,0,0); d.setDate(d.getDate() + this.adjustValue);
+      task.dueDate = d.toISOString();
+    };
+    this.showAdjust = true;
+  }
+
+  openAdjustForPlanned(task: ProjectTask) {
+    this.adjustTitle = 'Planned Pomodoros';
+    this.adjustLabel = '25-minute blocks';
+    this.adjustMin = 0; this.adjustMax = 100; this.adjustStep = 1; this.adjustSuffix='';
+    this.adjustValue = task.pomodorosPlanned || 0;
+    this.adjustApply = () => { task.pomodorosPlanned = this.adjustValue; };
+    this.showAdjust = true;
+  }
+
+  openAdjustForDone(task: ProjectTask) {
+    this.adjustTitle = 'Completed Pomodoros';
+    this.adjustLabel = '25-minute blocks';
+    this.adjustMin = 0; this.adjustMax = 100; this.adjustStep = 1; this.adjustSuffix='';
+    this.adjustValue = task.pomodorosDone || 0;
+    this.adjustApply = () => { task.pomodorosDone = this.adjustValue; };
+    this.showAdjust = true;
+  }
+
+  closeAdjust() { this.showAdjust = false; this.adjustApply = null; }
+  saveAdjust(val: number) { this.adjustValue = val; if (this.adjustApply) this.adjustApply(); this.closeAdjust(); }
 }

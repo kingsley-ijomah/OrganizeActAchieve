@@ -146,6 +146,11 @@ export class DataService {
     }
   }
 
+  updateProjectName(id: number, name: string) {
+    const p = this.projects.find(p => p.id === id);
+    if (p) p.name = name;
+  }
+
   removeInboxItem(itemId: number): void {
     const index = this.inboxItems.findIndex(item => item.id === itemId);
     if (index > -1) {
