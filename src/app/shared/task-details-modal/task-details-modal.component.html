@@ -1,0 +1,77 @@
+<div class="modal-overlay" *ngIf="isOpen" (click)="onOverlayClick($event)">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2 class="modal-title">Task Details</h2>
+      <button class="modal-close-btn" type="button" (click)="close.emit()" aria-label="Close">
+        <span class="material-icons">close</span>
+      </button>
+    </div>
+
+    <div class="task-preview" *ngIf="taskTitle">
+      <span class="material-icons">description</span>
+      <span class="task-preview-text">{{ taskTitle }}</span>
+    </div>
+
+    <form class="details-form" (submit)="$event.preventDefault(); onSave()">
+      <label class="field">
+        <span class="field-label">Description</span>
+        <textarea class="text-input" rows="3" [(ngModel)]="model.description" name="description" placeholder="Add more details..."></textarea>
+      </label>
+
+      <div class="row">
+        <label class="field">
+          <span class="field-label">Context</span>
+          <select class="select-input" [(ngModel)]="model.context" name="context">
+            <option value="">Select context</option>
+            <option value="computer">&#64;computer</option>
+            <option value="phone">&#64;phone</option>
+            <option value="home">&#64;home</option>
+            <option value="office">&#64;office</option>
+          </select>
+        </label>
+
+        <label class="field">
+          <span class="field-label">Status</span>
+          <select class="select-input" [(ngModel)]="model.status" name="status">
+            <option value="">Select status</option>
+            <option value="not_started">Not Started</option>
+            <option value="in_progress">In Progress</option>
+            <option value="completed">Completed</option>
+            <option value="deferred">Deferred</option>
+          </select>
+        </label>
+      </div>
+
+      <div class="row">
+        <label class="field">
+          <span class="field-label">Due Date (optional)</span>
+          <input class="text-input" type="date" [(ngModel)]="model.dueDate" name="dueDate" />
+        </label>
+
+        <label class="field">
+          <span class="field-label">Priority</span>
+          <select class="select-input" [(ngModel)]="model.priority" name="priority">
+            <option value="normal">Normal</option>
+            <option value="high">High</option>
+            <option value="low">Low</option>
+          </select>
+        </label>
+      </div>
+
+      <label class="field">
+        <span class="field-label">Pomodoros (25 min blocks)</span>
+        <select class="select-input" [(ngModel)]="model.pomodoros" name="pomodoros">
+          <option [ngValue]="0">None</option>
+          <option *ngFor="let p of pomodoroOptions" [ngValue]="p">{{ p }} × 25 min</option>
+        </select>
+      </label>
+
+      <div class="form-actions">
+        <button type="button" class="btn secondary" (click)="close.emit()">Cancel</button>
+        <button type="submit" class="btn primary">Save & Continue</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+

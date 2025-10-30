@@ -7,6 +7,7 @@ import { TaskItemComponent } from '../shared/task-item/task-item.component';
 import { ProjectSelectorComponent } from '../shared/project-selector/project-selector.component';
 import { LoadMoreButtonComponent } from '../shared/load-more-button/load-more-button.component';
 import { ConvertOrAddModalComponent } from '../shared/convert-or-add-modal/convert-or-add-modal.component';
+import { TaskDetailsModalComponent, TaskDetails } from '../shared/task-details-modal/task-details-modal.component';
 
 @Component({
   selector: 'app-inbox',
@@ -18,7 +19,8 @@ import { ConvertOrAddModalComponent } from '../shared/convert-or-add-modal/conve
     TaskItemComponent,
     ProjectSelectorComponent,
     LoadMoreButtonComponent,
-    ConvertOrAddModalComponent
+    ConvertOrAddModalComponent,
+    TaskDetailsModalComponent
   ],
   templateUrl: './inbox.component.html',
   styleUrls: ['./inbox.component.scss']
@@ -33,7 +35,9 @@ export class InboxComponent {
   // Project selector state
   showProjectSelector = false;
   showConvertOrAdd = false;
+  showTaskDetails = false;
   selectedItem: InboxItem | null = null;
+  pendingDetails: TaskDetails | null = null;
   
   inboxItems: InboxItem[] = [];
   projects: Project[] = [];
@@ -135,6 +139,18 @@ export class InboxComponent {
 
   handleAddToProject() {
     this.showConvertOrAdd = false;
+    this.showTaskDetails = true;
+  }
+
+  closeTaskDetails() {
+    this.showTaskDetails = false;
+    this.pendingDetails = null;
+  }
+
+  saveTaskDetails(details: TaskDetails) {
+    this.pendingDetails = details;
+    this.showTaskDetails = false;
+    // proceed to project selection after capturing details
     this.showProjectSelector = true;
   }
 

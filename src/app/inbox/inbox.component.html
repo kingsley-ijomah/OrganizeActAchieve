@@ -67,5 +67,12 @@
     (addToProject)="handleAddToProject()"
   ></app-convert-or-add-modal>
 
+  <app-task-details-modal
+    [isOpen]="showTaskDetails"
+    [taskTitle]="selectedItem?.title || ''"
+    (close)="closeTaskDetails()"
+    (save)="saveTaskDetails($event)"
+  ></app-task-details-modal>
+
   <router-outlet></router-outlet>
 </div>
