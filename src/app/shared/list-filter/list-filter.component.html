@@ -1,0 +1,32 @@
+<button class="filter-fab" type="button" (click)="open()" aria-label="Open filter">
+  <span class="material-icons">filter_list</span>
+</button>
+
+<div class="modal-overlay" *ngIf="isOpen" (click)="close()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2 class="modal-title">Filter</h2>
+      <button class="modal-close-btn" type="button" (click)="close()" aria-label="Close">
+        <span class="material-icons">close</span>
+      </button>
+    </div>
+
+    <div class="modal-body">
+      <label class="field">
+        <span class="field-label">Show items</span>
+        <select class="select-input" [(ngModel)]="localValue">
+          <option value="all">All</option>
+          <option value="today">Added Today</option>
+          <option value="week">Added This Week</option>
+        </select>
+      </label>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn secondary" type="button" (click)="close()">Cancel</button>
+      <button class="btn primary" type="button" (click)="apply()">Apply</button>
+    </div>
+  </div>
+</div>
+
+

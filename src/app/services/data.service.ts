@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 export interface InboxItem {
   id: number;
   title: string;
+  createdAt?: string; // ISO string
 }
 
 export interface Project {
@@ -17,7 +18,7 @@ export interface Project {
 })
 export class DataService {
   private inboxItems: InboxItem[] = [
-    { id: 1, title: 'Review project proposal' },
+    { id: 1, title: 'Review project proposal', createdAt: new Date().toISOString() },
     { id: 2, title: 'Email client for feedback' },
     { id: 3, title: 'Plan weekly review' },
     { id: 4, title: 'Organize workspace' },
@@ -51,7 +52,7 @@ export class DataService {
     { id: 32, title: 'Schedule doctor appointment' },
     { id: 33, title: 'Review subscription services' },
     { id: 34, title: 'Backup important files' },
-    { id: 35, title: 'Plan birthday party' },
+    { id: 35, title: 'Plan birthday party', createdAt: new Date().toISOString() },
   ];
 
   private projects: Project[] = [
@@ -78,6 +79,8 @@ export class DataService {
   ];
 
   getInboxItems(): InboxItem[] {
+    // Ensure createdAt exists for legacy items
+    this.inboxItems.forEach(i => { if (!i.createdAt) i.createdAt = new Date().toISOString(); });
     return this.inboxItems;
   }
 

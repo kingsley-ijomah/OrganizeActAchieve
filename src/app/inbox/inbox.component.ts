@@ -9,6 +9,7 @@ import { LoadMoreButtonComponent } from '../shared/load-more-button/load-more-bu
 import { ConvertOrAddModalComponent } from '../shared/convert-or-add-modal/convert-or-add-modal.component';
 import { ConfirmModalComponent } from '../shared/confirm-modal/confirm-modal.component';
 import { TaskDetailsModalComponent, TaskDetails } from '../shared/task-details-modal/task-details-modal.component';
+import { ListFilterComponent, ListFilterValue } from '../shared/list-filter/list-filter.component';
 
 @Component({
   selector: 'app-inbox',
@@ -22,7 +23,8 @@ import { TaskDetailsModalComponent, TaskDetails } from '../shared/task-details-m
     LoadMoreButtonComponent,
     ConvertOrAddModalComponent,
     TaskDetailsModalComponent,
-    ConfirmModalComponent
+    ConfirmModalComponent,
+    ListFilterComponent
   ],
   templateUrl: './inbox.component.html',
   styleUrls: ['./inbox.component.scss']
@@ -45,22 +47,55 @@ export class InboxComponent {
   
   inboxItems: InboxItem[] = [];
   projects: Project[] = [];
+  filter: ListFilterValue = 'all';
 
   constructor(private dataService: DataService) {
     this.inboxItems = this.dataService.getInboxItems();
     this.projects = this.dataService.getProjects();
   }
 
+  private isToday(dateIso?: string): boolean {
+    if (!dateIso) return true;
+    const d = new Date(dateIso);
+    const now = new Date();
+    return d.getFullYear() === now.getFullYear() && d.getMonth() === now.getMonth() && d.getDate() === now.getDate();
+  }
+
+  private isThisWeek(dateIso?: string): boolean {
+    if (!dateIso) return true;
+    const d = new Date(dateIso);
+    const now = new Date();
+    const day = now.getDay();
+    const diffToMonday = (day === 0 ? -6 : 1) - day;
+    const monday = new Date(now);
+    monday.setDate(now.getDate() + diffToMonday);
+    monday.setHours(0, 0, 0, 0);
+    const sunday = new Date(monday);
+    sunday.setDate(monday.getDate() + 6);
+    sunday.setHours(23, 59, 59, 999);
+    return d >= monday && d <= sunday;
+  }
+
+  get filteredItems() {
+    if (this.filter === 'today') {
+      return this.inboxItems.filter(i => this.isToday(i.createdAt));
+    }
+    if (this.filter === 'week') {
+      return this.inboxItems.filter(i => this.isThisWeek(i.createdAt));
+    }
+    return this.inboxItems;
+  }
+
   get displayedItems() {
-    return this.inboxItems.slice(0, this.displayedItemsCount);
+    return this.filteredItems.slice(0, this.displayedItemsCount);
   }
 
   get hasMoreItems() {
-    return this.displayedItemsCount < this.inboxItems.length;
+    return this.displayedItemsCount < this.filteredItems.length;
   }
 
   get remainingCount() {
-    return this.inboxItems.length - this.displayedItemsCount;
+    return this.filteredItems.length - this.displayedItemsCount;
   }
 
   toggleList() {
@@ -70,8 +105,13 @@ export class InboxComponent {
   loadMore() {
     this.displayedItemsCount = Math.min(
       this.displayedItemsCount + this.itemsPerPage,
-      this.inboxItems.length
+      this.filteredItems.length
     );
+  }
+
+  onFilterChange(val: ListFilterValue) {
+    this.filter = val;
+    this.displayedItemsCount = Math.min(this.itemsPerPage, this.filteredItems.length);
   }
 
   startEdit(item: InboxItem) {

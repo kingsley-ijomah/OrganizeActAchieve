@@ -87,3 +87,5 @@
 
   <router-outlet></router-outlet>
 </div>
+
+<app-list-filter [value]="filter" (change)="onFilterChange($event)"></app-list-filter>
