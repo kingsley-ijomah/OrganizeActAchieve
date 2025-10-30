@@ -5,12 +5,13 @@ import { ProgressStatComponent } from '../shared/progress-stat/progress-stat.com
 import { FormsModule } from '@angular/forms';
 import { NumberAdjustModalComponent } from '../shared/number-adjust-modal/number-adjust-modal.component';
 import { TaskEditModalComponent, TaskEditModel } from '../shared/task-edit-modal/task-edit-modal.component';
+import { TaskCreateModalComponent, TaskCreateModel } from '../shared/task-create-modal/task-create-modal.component';
 import { DataService, Project, ProjectTask } from '../services/data.service';
 
 @Component({
   selector: 'app-project-details',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule, ProgressStatComponent, NumberAdjustModalComponent, TaskEditModalComponent],
+  imports: [CommonModule, RouterModule, FormsModule, ProgressStatComponent, NumberAdjustModalComponent, TaskEditModalComponent, TaskCreateModalComponent],
   templateUrl: './project-details.component.html',
   styleUrl: './project-details.component.scss'
 })
@@ -173,5 +174,38 @@ export class ProjectDetailsComponent {
     t.pomodorosPlanned = model.pomodorosPlanned || 0;
     t.pomodorosDone = model.pomodorosDone || 0;
     this.closeTaskModal();
+  }
+
+  // create task modal
+  createModalOpen = false;
+  createModel: TaskCreateModel = { title: '', status: 'not_started', priority: 'normal' };
+  
+  openCreateModal() {
+    this.createModel = { title: '', status: 'not_started', priority: 'normal' };
+    this.createModalOpen = true;
+  }
+
+  closeCreateModal() { this.createModalOpen = false; }
+  
+  saveCreateModal(model: TaskCreateModel) {
+    if (!this.project || !model.title.trim()) return;
+    const newTask: Omit<ProjectTask, 'id' | 'projectId'> = {
+      title: model.title.trim(),
+      description: model.description,
+      context: model.context,
+      status: model.status || 'not_started',
+      priority: model.priority,
+      dueDate: model.dueDate ? new Date(model.dueDate).toISOString() : undefined,
+      pomodorosPlanned: model.pomodorosPlanned || 0,
+      pomodorosDone: model.pomodorosDone || 0,
+      createdAt: new Date().toISOString(),
+    };
+    this.data.addTaskToProjectWithDetails(this.project.id, newTask);
+    this.tasks = this.data.getProjectTasks(this.project.id);
+    // update project counts
+    if (this.project) {
+      this.project.totalTasks = (this.project.totalTasks || 0) + 1;
+    }
+    this.closeCreateModal();
   }
 }

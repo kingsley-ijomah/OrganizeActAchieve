@@ -1,7 +1,7 @@
 <div class="modal-overlay" *ngIf="isOpen" (click)="onOverlayClick($event)">
   <div class="modal-content" (click)="$event.stopPropagation()">
     <div class="modal-header">
-      <h2 class="modal-title">Edit Task</h2>
+      <h2 class="modal-title">New Task</h2>
       <button class="modal-close-btn" type="button" (click)="close.emit()"><span class="material-icons">close</span></button>
     </div>
     <div class="modal-body">
@@ -9,9 +9,8 @@
     </div>
     <div class="modal-actions">
       <button class="btn secondary" type="button" (click)="close.emit()">Cancel</button>
-      <button class="btn primary" type="button" (click)="save.emit(model)">Save</button>
+      <button class="btn primary" type="button" (click)="save.emit(model)">Create</button>
     </div>
   </div>
 </div>
-
 

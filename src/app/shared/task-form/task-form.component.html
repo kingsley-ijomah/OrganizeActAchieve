@@ -1,0 +1,60 @@
+<div class="form-body">
+  <label class="field">
+    <span class="field-label">Title</span>
+    <input class="text-input" type="text" [(ngModel)]="model.title" />
+  </label>
+
+  <label class="field">
+    <span class="field-label">Description</span>
+    <textarea class="text-input" rows="3" [(ngModel)]="model.description"></textarea>
+  </label>
+
+  <div class="row">
+    <label class="field">
+      <span class="field-label">Context</span>
+      <select class="text-input" [(ngModel)]="model.context">
+        <option value="">Select</option>
+        <option value="computer">&#64;computer</option>
+        <option value="phone">&#64;phone</option>
+        <option value="home">&#64;home</option>
+        <option value="office">&#64;office</option>
+      </select>
+    </label>
+    <label class="field">
+      <span class="field-label">Status</span>
+      <select class="text-input" [(ngModel)]="model.status">
+        <option value="not_started">Not Started</option>
+        <option value="in_progress">In Progress</option>
+        <option value="completed">Completed</option>
+        <option value="deferred">Deferred</option>
+      </select>
+    </label>
+  </div>
+
+  <div class="row">
+    <label class="field">
+      <span class="field-label">Due Date</span>
+      <input class="text-input" type="date" [(ngModel)]="model.dueDate" />
+    </label>
+    <label class="field">
+      <span class="field-label">Priority</span>
+      <select class="text-input" [(ngModel)]="model.priority">
+        <option value="normal">Normal</option>
+        <option value="high">High</option>
+        <option value="low">Low</option>
+      </select>
+    </label>
+  </div>
+
+  <div class="row">
+    <label class="field">
+      <span class="field-label">Pomodoros Planned</span>
+      <input class="text-input" type="number" min="0" [(ngModel)]="model.pomodorosPlanned" />
+    </label>
+    <label class="field">
+      <span class="field-label">Pomodoros Done</span>
+      <input class="text-input" type="number" min="0" [(ngModel)]="model.pomodorosDone" />
+    </label>
+  </div>
+</div>
+

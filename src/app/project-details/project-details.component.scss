@@ -77,4 +77,48 @@ app-progress-stat { flex: 1 1 100%; }
   height: calc(140px + env(safe-area-inset-bottom, 0px));
 }
 
+.fab {
+  position: fixed;
+  bottom: calc(80px + env(safe-area-inset-bottom, 0px));
+  right: 16px;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: #4a90e2;
+  border: none;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(74, 144, 226, 0.4);
+  z-index: 900;
+  transition: all 0.2s ease;
+}
+
+.fab:hover {
+  background: #3a80d2;
+  box-shadow: 0 6px 16px rgba(74, 144, 226, 0.5);
+}
+
+.fab:active {
+  transform: scale(0.95);
+}
+
+.fab .material-icons {
+  font-size: 28px;
+}
+
+@media (prefers-color-scheme: dark) {
+  .fab {
+    background: #5aa0f2;
+    box-shadow: 0 4px 12px rgba(90, 160, 242, 0.4);
+  }
+  
+  .fab:hover {
+    background: #4a90e2;
+    box-shadow: 0 6px 16px rgba(90, 160, 242, 0.5);
+  }
+}
+
 

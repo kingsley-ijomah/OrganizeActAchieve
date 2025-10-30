@@ -85,3 +85,14 @@
   (save)="saveTaskModal($event)"
   (close)="closeTaskModal()"
 ></app-task-edit-modal>
+
+<app-task-create-modal
+  [isOpen]="createModalOpen"
+  [model]="createModel"
+  (save)="saveCreateModal($event)"
+  (close)="closeCreateModal()"
+></app-task-create-modal>
+
+<button class="fab" type="button" (click)="openCreateModal()" *ngIf="project" aria-label="Create new task">
+  <span class="material-icons">add</span>
+</button>
