@@ -1,1 +1,109 @@
-<p>projects works!</p>
+<div class="projects-container">
+  <header class="projects-header">
+    <h1 class="projects-title">Projects</h1>
+  </header>
+  
+  <div class="projects-controls">
+    <div class="search-row">
+      <div class="search-wrapper">
+        <span class="material-icons search-icon">search</span>
+        <input 
+          class="search-input" 
+          type="text"
+          placeholder="Search projects…"
+          [(ngModel)]="searchQuery"
+        />
+        <button 
+          class="clear-search-btn" 
+          type="button"
+          *ngIf="searchQuery"
+          (click)="searchQuery = ''"
+          aria-label="Clear search"
+        >
+          <span class="material-icons">close</span>
+        </button>
+      </div>
+    </div>
+
+    <button 
+      class="add-project-btn" 
+      type="button"
+      (click)="toggleAddForm()"
+      [class.active]="showAddForm"
+      aria-label="Add new project"
+    >
+      <span class="material-icons">{{ showAddForm ? 'close' : 'add' }}</span>
+      <span class="btn-text">{{ showAddForm ? 'Cancel' : 'New Project' }}</span>
+    </button>
+
+    <div class="add-project-form" *ngIf="showAddForm">
+      <input 
+        class="project-name-input" 
+        type="text"
+        placeholder="Project name…"
+        [(ngModel)]="newProjectName"
+        (keydown.enter)="addProject()"
+        (keydown.escape)="toggleAddForm()"
+        #projectInput
+      />
+      <button 
+        class="save-project-btn" 
+        type="button"
+        (click)="addProject()"
+        [disabled]="!newProjectName.trim()"
+        aria-label="Save project"
+      >
+        <span class="material-icons">check</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="projects-grid">
+    <div *ngFor="let project of displayedProjects" class="project-card">
+      <div class="project-header">
+        <h3 class="project-name">{{ project.name }}</h3>
+      </div>
+      
+      <div class="project-stats">
+        <div class="task-count">
+          <span class="count-number">{{ project.completedTasks }}</span>
+          <span class="count-separator">/</span>
+          <span class="count-total">{{ project.totalTasks }}</span>
+          <span class="count-label">tasks</span>
+        </div>
+        <div class="progress-percentage">{{ getProgress(project) }}%</div>
+      </div>
+
+      <div class="progress-bar-container">
+        <div 
+          class="progress-bar" 
+          [style.width.%]="getProgress(project)"
+        ></div>
+      </div>
+    </div>
+  </div>
+
+  <button 
+    class="load-more-btn" 
+    type="button"
+    *ngIf="hasMoreProjects"
+    (click)="loadMore()"
+    aria-label="Load more projects"
+  >
+    <span class="load-more-text">Load More</span>
+    <span class="load-more-count">({{ remainingCount }} remaining)</span>
+    <span class="material-icons">expand_more</span>
+  </button>
+
+  <div class="empty-state" *ngIf="filteredProjects.length === 0 && searchQuery">
+    <span class="material-icons">search_off</span>
+    <p>No projects found matching "{{ searchQuery }}"</p>
+  </div>
+
+  <div class="empty-state" *ngIf="projects.length === 0 && !searchQuery">
+    <span class="material-icons">folder</span>
+    <p>No projects yet. Create your first project to get started!</p>
+  </div>
+
+  <router-outlet></router-outlet>
+</div>
