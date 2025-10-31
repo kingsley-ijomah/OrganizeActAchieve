@@ -22,5 +22,13 @@ export interface TaskFormModel {
 })
 export class TaskFormComponent {
   @Input() model!: TaskFormModel;
+
+  getArray(count: number): number[] {
+    return Array.from({ length: Math.max(0, count) }, (_, i) => i);
+  }
+
+  selectPomodoros(count: number) {
+    this.model.pomodorosPlanned = Math.min(4, Math.max(0, count));
+  }
 }
 

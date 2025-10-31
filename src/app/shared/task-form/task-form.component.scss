@@ -37,6 +37,64 @@
   gap: 12px;
 }
 
+.tomato-selector {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.tomato-btn {
+  width: 36px;
+  height: 36px;
+  border: 1.5px solid #e0e0e0;
+  border-radius: 8px;
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  padding: 0;
+}
+
+.tomato-btn:hover {
+  border-color: #4a90e2;
+  background: #f0f7ff;
+}
+
+.tomato-btn.selected {
+  border-color: #4a90e2;
+  background: #e8f2ff;
+}
+
+.tomato-btn.active {
+  border-color: #4a90e2;
+  background: #4a90e2;
+}
+
+.tomato-icon {
+  font-size: 20px;
+  line-height: 1;
+  opacity: 0.4;
+}
+
+.tomato-btn.selected .tomato-icon,
+.tomato-btn.active .tomato-icon {
+  opacity: 1;
+}
+
+.tomato-btn.clear {
+  font-size: 18px;
+  color: #999;
+}
+
+.tomato-btn.clear.selected {
+  background: #fff;
+  border-color: #e0e0e0;
+  color: #666;
+}
+
 @media (prefers-color-scheme: dark) {
   .field-label {
     color: #bbb;
@@ -51,6 +109,36 @@
   .text-input:focus {
     border-color: #5aa0f2;
     box-shadow: 0 0 0 3px rgba(90, 160, 242, 0.2);
+  }
+
+  .tomato-btn {
+    background: #2a2a2a;
+    border-color: #3a3a3a;
+  }
+
+  .tomato-btn:hover {
+    border-color: #5aa0f2;
+    background: #2a2a3a;
+  }
+
+  .tomato-btn.selected {
+    border-color: #5aa0f2;
+    background: #2a2a3a;
+  }
+
+  .tomato-btn.active {
+    border-color: #5aa0f2;
+    background: #5aa0f2;
+  }
+
+  .tomato-btn.clear {
+    color: #bbb;
+  }
+
+  .tomato-btn.clear.selected {
+    background: #2a2a2a;
+    border-color: #3a3a3a;
+    color: #ddd;
   }
 }
 

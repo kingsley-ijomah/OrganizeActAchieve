@@ -54,6 +54,10 @@ export class ProjectDetailsComponent {
     }
   }
 
+  getArray(count: number): number[] {
+    return Array.from({ length: Math.max(0, count) }, (_, i) => i);
+  }
+
   isToday(dateIso?: string): boolean {
     if (!dateIso) return false;
     const d = new Date(dateIso); const n = new Date();
@@ -123,7 +127,7 @@ export class ProjectDetailsComponent {
   openAdjustForPlanned(task: ProjectTask) {
     this.adjustTitle = 'Planned Pomodoros';
     this.adjustLabel = '25-minute blocks';
-    this.adjustMin = 0; this.adjustMax = 100; this.adjustStep = 1; this.adjustSuffix='';
+    this.adjustMin = 0; this.adjustMax = 4; this.adjustStep = 1; this.adjustSuffix='';
     this.adjustValue = task.pomodorosPlanned || 0;
     this.adjustApply = () => { task.pomodorosPlanned = this.adjustValue; };
     this.showAdjust = true;
@@ -132,7 +136,7 @@ export class ProjectDetailsComponent {
   openAdjustForDone(task: ProjectTask) {
     this.adjustTitle = 'Completed Pomodoros';
     this.adjustLabel = '25-minute blocks';
-    this.adjustMin = 0; this.adjustMax = 100; this.adjustStep = 1; this.adjustSuffix='';
+    this.adjustMin = 0; this.adjustMax = 4; this.adjustStep = 1; this.adjustSuffix='';
     this.adjustValue = task.pomodorosDone || 0;
     this.adjustApply = () => { task.pomodorosDone = this.adjustValue; };
     this.showAdjust = true;

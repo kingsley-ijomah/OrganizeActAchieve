@@ -49,11 +49,32 @@
   <div class="row">
     <label class="field">
       <span class="field-label">Pomodoros Planned</span>
-      <input class="text-input" type="number" min="0" [(ngModel)]="model.pomodorosPlanned" />
+      <div class="tomato-selector">
+        <button 
+          type="button" 
+          class="tomato-btn" 
+          *ngFor="let i of getArray(4)"
+          [class.selected]="(model.pomodorosPlanned || 0) > i"
+          [class.active]="(model.pomodorosPlanned || 0) === (i + 1)"
+          (click)="selectPomodoros(i + 1)"
+          [attr.aria-label]="(i + 1) + ' pomodoros'"
+        >
+          <span class="tomato-icon">🍅</span>
+        </button>
+        <button 
+          type="button" 
+          class="tomato-btn clear"
+          [class.selected]="(model.pomodorosPlanned || 0) === 0"
+          (click)="selectPomodoros(0)"
+          aria-label="No pomodoros"
+        >
+          <span class="material-icons">close</span>
+        </button>
+      </div>
     </label>
     <label class="field">
       <span class="field-label">Pomodoros Done</span>
-      <input class="text-input" type="number" min="0" [(ngModel)]="model.pomodorosDone" />
+      <input class="text-input" type="number" min="0" max="4" [(ngModel)]="model.pomodorosDone" />
     </label>
   </div>
 </div>

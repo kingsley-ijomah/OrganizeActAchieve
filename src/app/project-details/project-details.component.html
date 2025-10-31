@@ -38,11 +38,16 @@
           <div class="title-row">
             <span class="task-title">{{ t.title }}</span>
             <button class="view-link" type="button" (click)="openTaskModal(t)">View</button>
+          </div>
+          <div class="meta-row">
             <div class="chips">
               <span *ngIf="t.context" class="chip">&#64;{{ t.context }}</span>
               <span *ngIf="t.priority" class="chip priority-{{ t.priority }}">{{ t.priority | titlecase }}</span>
-              <span *ngIf="t.pomodorosPlanned" class="chip pomo">{{ t.pomodorosDone || 0 }}/{{ t.pomodorosPlanned }} × 25</span>
               <span *ngIf="t.dueDate" class="chip due">{{ isToday(t.dueDate) ? 'Today' : (t.dueDate | date:'MMM d') }}</span>
+            </div>
+            <div class="pomodoros" *ngIf="t.pomodorosPlanned">
+              <span class="tomato-icon completed" *ngFor="let i of getArray(t.pomodorosDone || 0)">🍅</span>
+              <span class="tomato-icon remaining" *ngFor="let i of getArray((t.pomodorosPlanned || 0) - (t.pomodorosDone || 0))">🍅</span>
             </div>
           </div>
           <div class="actions" *ngIf="filter!=='completed'">
