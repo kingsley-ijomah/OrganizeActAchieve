@@ -10,6 +10,7 @@ import { ConvertOrAddModalComponent } from '../shared/convert-or-add-modal/conve
 import { ConfirmModalComponent } from '../shared/confirm-modal/confirm-modal.component';
 import { TaskDetailsModalComponent, TaskDetails } from '../shared/task-details-modal/task-details-modal.component';
 import { ListFilterComponent, ListFilterValue } from '../shared/list-filter/list-filter.component';
+import { InboxCaptureComponent } from '../shared/inbox-capture/inbox-capture.component';
 
 @Component({
   selector: 'app-inbox',
@@ -24,14 +25,15 @@ import { ListFilterComponent, ListFilterValue } from '../shared/list-filter/list
     ConvertOrAddModalComponent,
     TaskDetailsModalComponent,
     ConfirmModalComponent,
-    ListFilterComponent
+    ListFilterComponent,
+    InboxCaptureComponent
   ],
   templateUrl: './inbox.component.html',
   styleUrls: ['./inbox.component.scss']
 })
 export class InboxComponent {
   showList = false;
-  newItemText = '';
+  showCapture = false;
   itemsPerPage = 10;
   displayedItemsCount = 10;
   editingItemId: number | null = null;
@@ -114,6 +116,27 @@ export class InboxComponent {
   onFilterChange(val: ListFilterValue) {
     this.filter = val;
     this.displayedItemsCount = Math.min(this.itemsPerPage, this.filteredItems.length);
+  }
+
+  openCapture() {
+    this.showCapture = true;
+  }
+
+  closeCapture() {
+    this.showCapture = false;
+  }
+
+  addItem(text: string) {
+    if (!text.trim()) return;
+    const newId = Math.max(...this.inboxItems.map(i => i.id), 0) + 1;
+    const newItem: InboxItem = {
+      id: newId,
+      title: text.trim(),
+      createdAt: new Date().toISOString()
+    };
+    this.dataService.addInboxItem(newItem);
+    this.inboxItems = this.dataService.getInboxItems();
+    this.closeCapture();
   }
 
   startEdit(item: InboxItem) {

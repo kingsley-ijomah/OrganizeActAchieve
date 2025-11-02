@@ -3,21 +3,6 @@
     <h1 class="inbox-title">Inbox</h1>
   </header>
   
-  <div class="inbox-input-row">
-    <input 
-      class="inbox-input" 
-      placeholder="Capture a new item…" 
-      type="text"
-      [(ngModel)]="newItemText"
-    />
-    <button class="icon-btn mic-btn" type="button" aria-label="Record voice">
-      <span class="material-icons">mic</span>
-    </button>
-    <button class="icon-btn add-btn" type="button" aria-label="Add item">
-      <span class="material-icons">add</span>
-    </button>
-  </div>
-  
   <button 
     class="show-list-btn" 
     type="button"
@@ -99,3 +84,13 @@
 </div>
 
 <app-list-filter [value]="filter" (change)="onFilterChange($event)"></app-list-filter>
+
+<app-inbox-capture
+  [isVisible]="showCapture"
+  (add)="addItem($event)"
+  (close)="closeCapture()"
+></app-inbox-capture>
+
+<button class="fab-inbox" type="button" (click)="openCapture()" *ngIf="!showCapture" aria-label="Capture new item">
+  <span class="material-icons">add</span>
+</button>

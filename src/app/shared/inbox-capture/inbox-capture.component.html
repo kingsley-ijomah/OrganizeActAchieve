@@ -1,0 +1,17 @@
+<div class="capture-container" *ngIf="isVisible">
+  <div class="capture-row">
+    <input 
+      class="capture-input" 
+      placeholder="Capture a new item…" 
+      type="text"
+      [(ngModel)]="text"
+      (keydown.enter)="onAdd()"
+      (keydown.escape)="onClose()"
+      #inputRef
+    />
+    <button class="icon-btn mic-btn" type="button" aria-label="Record voice">
+      <span class="material-icons">mic</span>
+    </button>
+  </div>
+</div>
+
