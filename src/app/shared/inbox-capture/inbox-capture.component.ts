@@ -14,13 +14,13 @@ export class InboxCaptureComponent implements AfterViewChecked, OnChanges {
   @Output() add = new EventEmitter<string>();
   @Output() close = new EventEmitter<void>();
 
-  @ViewChild('inputRef', { static: false }) inputRef!: ElementRef<HTMLInputElement>;
+  @ViewChild('textareaRef', { static: false }) textareaRef!: ElementRef<HTMLTextAreaElement>;
   text: string = '';
   shouldFocus = false;
 
   ngAfterViewChecked() {
-    if (this.isVisible && this.shouldFocus && this.inputRef) {
-      this.inputRef.nativeElement.focus();
+    if (this.isVisible && this.shouldFocus && this.textareaRef) {
+      this.textareaRef.nativeElement.focus();
       this.shouldFocus = false;
     }
   }
@@ -29,6 +29,16 @@ export class InboxCaptureComponent implements AfterViewChecked, OnChanges {
     if (changes['isVisible'] && this.isVisible) {
       this.shouldFocus = true;
     }
+  }
+
+  onEnterKey(event: Event) {
+    // Submit on Enter (with or without modifier), create new line on Shift+Enter
+    const keyboardEvent = event as KeyboardEvent;
+    if (!keyboardEvent.shiftKey) {
+      keyboardEvent.preventDefault();
+      this.onAdd();
+    }
+    // If Shift+Enter, allow default behavior (new line)
   }
 
   onAdd() {

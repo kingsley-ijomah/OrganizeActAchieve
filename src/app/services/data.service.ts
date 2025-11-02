@@ -125,7 +125,12 @@ export class DataService {
   getInboxItems(): InboxItem[] {
     // Ensure createdAt exists for legacy items
     this.inboxItems.forEach(i => { if (!i.createdAt) i.createdAt = new Date().toISOString(); });
-    return this.inboxItems;
+    // Sort by createdAt descending (newest first)
+    return [...this.inboxItems].sort((a, b) => {
+      const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+      const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+      return dateB - dateA; // Descending order
+    });
   }
 
   getProjects(): Project[] {

@@ -1,15 +1,15 @@
 <div class="capture-backdrop" *ngIf="isVisible" (click)="onClose()"></div>
 <div class="capture-container" *ngIf="isVisible">
   <div class="capture-row">
-    <input 
+    <textarea 
       class="capture-input" 
       placeholder="Capture a new item…" 
-      type="text"
+      rows="4"
       [(ngModel)]="text"
-      (keydown.enter)="onAdd()"
+      (keydown.enter)="onEnterKey($event)"
       (keydown.escape)="onClose()"
-      #inputRef
-    />
+      #textareaRef
+    ></textarea>
     <button class="icon-btn mic-btn" type="button" aria-label="Record voice">
       <span class="material-icons">mic</span>
     </button>
