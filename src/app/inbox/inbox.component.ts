@@ -34,6 +34,7 @@ import { InboxCaptureComponent } from '../shared/inbox-capture/inbox-capture.com
 export class InboxComponent {
   showList = false;
   showCapture = false;
+  showFilter = false;
   itemsPerPage = 10;
   displayedItemsCount = 10;
   editingItemId: number | null = null;
@@ -113,9 +114,18 @@ export class InboxComponent {
     );
   }
 
+  openFilter() {
+    this.showFilter = true;
+  }
+
+  closeFilter() {
+    this.showFilter = false;
+  }
+
   onFilterChange(val: ListFilterValue) {
     this.filter = val;
     this.displayedItemsCount = Math.min(this.itemsPerPage, this.filteredItems.length);
+    this.closeFilter();
   }
 
   openCapture() {

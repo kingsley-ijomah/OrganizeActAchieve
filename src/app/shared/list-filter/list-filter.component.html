@@ -1,12 +1,8 @@
-<button class="filter-fab" type="button" (click)="open()" aria-label="Open filter">
-  <span class="material-icons">filter_list</span>
-</button>
-
-<div class="modal-overlay" *ngIf="isOpen" (click)="close()">
+<div class="modal-overlay" *ngIf="isOpen" (click)="onClose()">
   <div class="modal-content" (click)="$event.stopPropagation()">
     <div class="modal-header">
       <h2 class="modal-title">Filter</h2>
-      <button class="modal-close-btn" type="button" (click)="close()" aria-label="Close">
+      <button class="modal-close-btn" type="button" (click)="onClose()" aria-label="Close">
         <span class="material-icons">close</span>
       </button>
     </div>
@@ -23,7 +19,7 @@
     </div>
 
     <div class="modal-actions">
-      <button class="btn secondary" type="button" (click)="close()">Cancel</button>
+      <button class="btn secondary" type="button" (click)="onClose()">Cancel</button>
       <button class="btn primary" type="button" (click)="apply()">Apply</button>
     </div>
   </div>

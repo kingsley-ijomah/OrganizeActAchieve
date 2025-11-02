@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output, OnChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
@@ -11,23 +11,27 @@ export type ListFilterValue = 'all' | 'today' | 'week';
   templateUrl: './list-filter.component.html',
   styleUrls: ['./list-filter.component.scss']
 })
-export class ListFilterComponent {
+export class ListFilterComponent implements OnChanges {
   @Input() value: ListFilterValue = 'all';
+  @Input() isOpen: boolean = false;
   @Output() change = new EventEmitter<ListFilterValue>();
+  @Output() close = new EventEmitter<void>();
 
-  isOpen = false;
   localValue: ListFilterValue = 'all';
 
-  open() {
-    this.localValue = this.value;
-    this.isOpen = true;
+  ngOnChanges() {
+    if (this.isOpen) {
+      this.localValue = this.value;
+    }
   }
 
-  close() { this.isOpen = false; }
+  onClose() {
+    this.close.emit();
+  }
 
   apply() {
     this.change.emit(this.localValue);
-    this.isOpen = false;
+    this.close.emit();
   }
 }
 
