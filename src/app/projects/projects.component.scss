@@ -8,7 +8,50 @@
 }
 
 .projects-header {
-  margin-bottom: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  padding: 0 4px;
+}
+
+.projects-title-section {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  flex: 1;
+  min-width: 0;
+}
+
+.filter-btn {
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  background: transparent;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.filter-btn:hover {
+  background: #f5f5f5;
+}
+
+.filter-btn:active {
+  transform: scale(0.95);
+  background: #e8e8e8;
+}
+
+.filter-btn .material-icons {
+  font-size: 22px;
+  color: #666;
+  user-select: none;
 }
 
 .projects-title {
@@ -17,11 +60,25 @@
   margin: 0;
   color: #1a1a1a;
   letter-spacing: -0.01em;
+  line-height: 1.2;
 }
 
 @media (min-width: 480px) {
   .projects-title {
     font-size: 20px;
+  }
+}
+
+.project-count-badge {
+  font-size: 13px;
+  color: #999;
+  font-weight: 400;
+  white-space: nowrap;
+}
+
+@media (prefers-color-scheme: dark) {
+  .project-count-badge {
+    color: #888;
   }
 }
 
@@ -95,54 +152,6 @@
   color: #666666;
 }
 
-.add-project-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  width: 100%;
-  padding: 14px 16px;
-  background: #ffffff;
-  border: 1.5px solid #e0e0e0;
-  border-radius: 12px;
-  font-size: 16px;
-  font-weight: 500;
-  color: #1a1a1a;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  font-family: inherit;
-  -webkit-tap-highlight-color: transparent;
-}
-
-.add-project-btn:hover {
-  background: #fafafa;
-  border-color: #d0d0d0;
-}
-
-.add-project-btn:active {
-  transform: scale(0.98);
-  background: #f5f5f5;
-}
-
-.add-project-btn.active {
-  background: #f0f7ff;
-  border-color: #4a90e2;
-  color: #4a90e2;
-}
-
-.add-project-btn .material-icons {
-  font-size: 22px;
-  transition: transform 0.2s ease;
-}
-
-.add-project-btn.active .material-icons {
-  transform: rotate(45deg);
-}
-
-.btn-text {
-  font-weight: 500;
-}
-
 .add-project-form {
   display: flex;
   align-items: center;
@@ -163,6 +172,38 @@
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+.fab-projects {
+  position: fixed;
+  bottom: calc(80px + env(safe-area-inset-bottom, 0px));
+  right: 16px;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: #4a90e2;
+  border: none;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(74, 144, 226, 0.4);
+  z-index: 700;
+  transition: all 0.2s ease;
+}
+
+.fab-projects:hover {
+  background: #3a80d2;
+  box-shadow: 0 6px 16px rgba(74, 144, 226, 0.5);
+}
+
+.fab-projects:active {
+  transform: scale(0.95);
+}
+
+.fab-projects .material-icons {
+  font-size: 28px;
 }
 
 .project-name-input {
@@ -215,6 +256,37 @@
 .save-project-btn .material-icons {
   font-size: 22px;
   color: #ffffff;
+}
+
+.cancel-project-btn {
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  background: transparent;
+  border: 1.5px solid #e0e0e0;
+  border-radius: 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.cancel-project-btn:hover {
+  background: #f5f5f5;
+  border-color: #d0d0d0;
+}
+
+.cancel-project-btn:active {
+  transform: scale(0.95);
+  background: #e8e8e8;
+}
+
+.cancel-project-btn .material-icons {
+  font-size: 22px;
+  color: #666;
 }
 
 .projects-grid {
@@ -480,20 +552,26 @@
     color: #b0b0b0;
   }
 
-  .add-project-btn {
-    background: #2a2a2a;
-    border-color: #3a3a3a;
-    color: #ffffff;
+  .fab-projects {
+    background: #5aa0f2;
+    box-shadow: 0 4px 12px rgba(90, 160, 242, 0.4);
   }
 
-  .add-project-btn:hover {
+  .fab-projects:hover {
+    background: #4a90e2;
+    box-shadow: 0 6px 16px rgba(90, 160, 242, 0.5);
+  }
+
+  .filter-btn:hover {
+    background: #2a2a2a;
+  }
+
+  .filter-btn:active {
     background: #333333;
   }
 
-  .add-project-btn.active {
-    background: #2a2a3a;
-    border-color: #5aa0f2;
-    color: #5aa0f2;
+  .filter-btn .material-icons {
+    color: #999;
   }
 
   .add-project-form {
@@ -508,6 +586,24 @@
 
   .project-name-input:focus {
     box-shadow: 0 0 0 3px rgba(90, 160, 242, 0.2);
+  }
+
+  .cancel-project-btn {
+    background: #2a2a2a;
+    border-color: #3a3a3a;
+  }
+
+  .cancel-project-btn:hover {
+    background: #333333;
+    border-color: #4a4a4a;
+  }
+
+  .cancel-project-btn:active {
+    background: #3a3a3a;
+  }
+
+  .cancel-project-btn .material-icons {
+    color: #999;
   }
 
   .project-card {

@@ -1,6 +1,12 @@
 <div class="projects-container">
   <header class="projects-header">
-    <h1 class="projects-title">Projects</h1>
+    <div class="projects-title-section">
+      <h1 class="projects-title">Projects</h1>
+      <span class="project-count-badge">{{ projects.length }} projects</span>
+    </div>
+    <button class="filter-btn" type="button" (click)="openFilter()" aria-label="Filter">
+      <span class="material-icons">filter_list</span>
+    </button>
   </header>
   
   <div class="projects-controls">
@@ -25,17 +31,6 @@
       </div>
     </div>
 
-    <button 
-      class="add-project-btn" 
-      type="button"
-      (click)="toggleAddForm()"
-      [class.active]="showAddForm"
-      aria-label="Add new project"
-    >
-      <span class="material-icons">{{ showAddForm ? 'close' : 'add' }}</span>
-      <span class="btn-text">{{ showAddForm ? 'Cancel' : 'New Project' }}</span>
-    </button>
-
     <div class="add-project-form" *ngIf="showAddForm">
       <input 
         class="project-name-input" 
@@ -46,6 +41,14 @@
         (keydown.escape)="toggleAddForm()"
         #projectInput
       />
+      <button 
+        class="cancel-project-btn" 
+        type="button"
+        (click)="toggleAddForm()"
+        aria-label="Cancel"
+      >
+        <span class="material-icons">close</span>
+      </button>
       <button 
         class="save-project-btn" 
         type="button"
@@ -86,3 +89,14 @@
 
   <router-outlet></router-outlet>
 </div>
+
+<app-list-filter
+  [value]="filter"
+  [isOpen]="showFilter"
+  (change)="onFilterChange($event)"
+  (close)="closeFilter()"
+></app-list-filter>
+
+<button class="fab-projects" type="button" (click)="toggleAddForm()" *ngIf="!showAddForm" aria-label="Add new project">
+  <span class="material-icons">add</span>
+</button>

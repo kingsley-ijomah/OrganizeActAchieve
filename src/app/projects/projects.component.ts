@@ -6,11 +6,12 @@ import { DataService, Project } from '../services/data.service';
 import { Router } from '@angular/router';
 import { ProjectCardComponent } from '../shared/project-card/project-card.component';
 import { LoadMoreButtonComponent } from '../shared/load-more-button/load-more-button.component';
+import { ListFilterComponent, ListFilterValue } from '../shared/list-filter/list-filter.component';
 
 @Component({
   selector: 'app-projects',
   standalone: true,
-  imports: [CommonModule, RouterOutlet, FormsModule, ProjectCardComponent, LoadMoreButtonComponent],
+  imports: [CommonModule, RouterOutlet, FormsModule, ProjectCardComponent, LoadMoreButtonComponent, ListFilterComponent],
   templateUrl: './projects.component.html',
   styleUrls: ['./projects.component.scss']
 })
@@ -18,6 +19,8 @@ export class ProjectsComponent implements OnInit {
   searchQuery: string = '';
   newProjectName: string = '';
   showAddForm: boolean = false;
+  showFilter: boolean = false;
+  filter: ListFilterValue = 'all';
   itemsPerPage: number = 8;
   displayedItemsCount: number = 8;
   
@@ -124,5 +127,20 @@ export class ProjectsComponent implements OnInit {
 
   openDetails(project: Project) {
     this.router.navigate(['/projects', project.id]);
+  }
+
+  openFilter(): void {
+    this.showFilter = true;
+  }
+
+  closeFilter(): void {
+    this.showFilter = false;
+  }
+
+  onFilterChange(val: ListFilterValue): void {
+    this.filter = val;
+    this.closeFilter();
+    // Reset displayed items count when filter changes
+    this.displayedItemsCount = Math.min(this.itemsPerPage, this.filteredProjects.length);
   }
 }
