@@ -32,7 +32,6 @@ import { InboxCaptureComponent } from '../shared/inbox-capture/inbox-capture.com
   styleUrls: ['./inbox.component.scss']
 })
 export class InboxComponent {
-  showList = false;
   showCapture = false;
   showFilter = false;
   itemsPerPage = 10;
@@ -103,9 +102,6 @@ export class InboxComponent {
     return this.filteredItems.length - this.displayedItemsCount;
   }
 
-  toggleList() {
-    this.showList = !this.showList;
-  }
 
   loadMore() {
     this.displayedItemsCount = Math.min(
