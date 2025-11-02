@@ -3,12 +3,15 @@
   [class.editing]="isEditing"
   (click)="onSelect($event)"
 >
-  <button class="item-checkbox" type="button" aria-label="Mark task as done" *ngIf="!isEditing" (click)="onComplete($event)">
-    <span class="material-icons checkbox-icon">check_box_outline_blank</span>
+  <button class="item-checkbox" type="button" aria-label="Select task" *ngIf="!isEditing" (click)="onToggleSelect($event)">
+    <span class="material-icons checkbox-icon">{{ isSelected ? 'check_box' : 'check_box_outline_blank' }}</span>
   </button>
   
   <div class="item-content" *ngIf="!isEditing">
-    <span class="item-title">{{ item.title }}</span>
+    <div class="item-title-wrapper">
+      <span class="item-title">{{ item.title }}</span>
+      <span class="item-date" *ngIf="displayDate">{{ displayDate }}</span>
+    </div>
     <div class="item-actions">
       <button class="action-btn edit-btn" type="button" (click)="onEdit($event)" aria-label="Edit task">
         <span class="material-icons">edit</span>

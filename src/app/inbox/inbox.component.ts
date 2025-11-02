@@ -38,12 +38,16 @@ export class InboxComponent {
   displayedItemsCount = 10;
   editingItemId: number | null = null;
   
+  // Selection state
+  selectedItemIds = new Set<number>();
+  
   // Project selector state
   showProjectSelector = false;
   showConvertOrAdd = false;
   showTaskDetails = false;
   showConfirmDone = false;
   showConfirmDelete = false;
+  showConfirmBulkDelete = false;
   selectedItem: InboxItem | null = null;
   pendingDetails: TaskDetails | null = null;
   pendingCompleteId: number | null = null;
@@ -102,6 +106,18 @@ export class InboxComponent {
     return this.filteredItems.length - this.displayedItemsCount;
   }
 
+  get hasSelectedItems(): boolean {
+    return this.selectedItemIds.size > 0;
+  }
+
+  get selectedCount(): number {
+    return this.selectedItemIds.size;
+  }
+
+  isSelected(itemId: number): boolean {
+    return this.selectedItemIds.has(itemId);
+  }
+
 
   loadMore() {
     this.displayedItemsCount = Math.min(
@@ -153,6 +169,7 @@ export class InboxComponent {
     const item = this.inboxItems.find(i => i.id === payload.id);
     if (item) {
       item.title = payload.title;
+      item.updatedAt = new Date().toISOString();
     }
     this.cancelEdit();
   }
@@ -186,29 +203,40 @@ export class InboxComponent {
     this.pendingDeleteId = null;
   }
 
-  completeItem(itemId: number) {
-    this.pendingCompleteId = itemId;
-    this.showConfirmDone = true;
-  }
-
-  cancelComplete() {
-    this.showConfirmDone = false;
-    this.pendingCompleteId = null;
-  }
-
-  confirmComplete() {
-    if (this.pendingCompleteId == null) return;
-    const itemId = this.pendingCompleteId;
-    const index = this.inboxItems.findIndex(i => i.id === itemId);
-    if (index > -1) {
-      this.inboxItems.splice(index, 1);
-      this.dataService.removeInboxItem(itemId);
-      if (this.editingItemId === itemId) {
-        this.cancelEdit();
-      }
+  toggleSelect(itemId: number) {
+    if (this.selectedItemIds.has(itemId)) {
+      this.selectedItemIds.delete(itemId);
+    } else {
+      this.selectedItemIds.add(itemId);
     }
-    this.showConfirmDone = false;
-    this.pendingCompleteId = null;
+  }
+
+  clearSelection() {
+    this.selectedItemIds.clear();
+  }
+
+  deleteSelectedItems() {
+    this.showConfirmBulkDelete = true;
+  }
+
+  cancelBulkDelete() {
+    this.showConfirmBulkDelete = false;
+  }
+
+  confirmBulkDelete() {
+    // Delete all selected items
+    this.selectedItemIds.forEach(itemId => {
+      const index = this.inboxItems.findIndex(i => i.id === itemId);
+      if (index > -1) {
+        this.inboxItems.splice(index, 1);
+        this.dataService.removeInboxItem(itemId);
+        if (this.editingItemId === itemId) {
+          this.cancelEdit();
+        }
+      }
+    });
+    this.selectedItemIds.clear();
+    this.showConfirmBulkDelete = false;
   }
 
   isEditing(itemId: number): boolean {

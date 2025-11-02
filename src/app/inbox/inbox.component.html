@@ -4,8 +4,22 @@
       <h1 class="inbox-title">Inbox</h1>
       <span class="item-count-badge">{{ inboxItems.length }} items</span>
     </div>
-    <button class="filter-link" type="button" (click)="openFilter()">Filter</button>
+    <button class="filter-link" type="button" (click)="openFilter()" *ngIf="!hasSelectedItems">Filter</button>
   </header>
+
+  <div class="selection-bar" *ngIf="hasSelectedItems">
+    <span class="selection-count">{{ selectedCount }} selected</span>
+    <div class="selection-actions">
+      <button class="selection-btn delete-btn" type="button" (click)="deleteSelectedItems()" aria-label="Delete selected">
+        <span class="material-icons">delete</span>
+        <span>Delete</span>
+      </button>
+      <button class="selection-btn cancel-btn" type="button" (click)="clearSelection()" aria-label="Clear selection">
+        <span class="material-icons">close</span>
+        <span>Cancel</span>
+      </button>
+    </div>
+  </div>
 
   <div class="inbox-list-container">
     <ul class="inbox-list">
@@ -13,9 +27,10 @@
         *ngFor="let item of displayedItems"
         [item]="item"
         [isEditing]="isEditing(item.id)"
+        [isSelected]="isSelected(item.id)"
         (edit)="startEdit($event)"
         (delete)="deleteItem($event)"
-        (complete)="completeItem($event)"
+        (toggleSelect)="toggleSelect($event)"
         (save)="saveEdit($event)"
         (cancel)="cancelEdit()"
         (select)="openProjectSelector($event)"
@@ -53,16 +68,6 @@
   ></app-task-details-modal>
 
   <app-confirm-modal
-    [isOpen]="showConfirmDone"
-    title="Mark as done?"
-    message="This will remove the item from your Inbox. You can add it again later if needed."
-    confirmLabel="Mark Done"
-    cancelLabel="Cancel"
-    (confirm)="confirmComplete()"
-    (cancel)="cancelComplete()"
-  ></app-confirm-modal>
-
-  <app-confirm-modal
     [isOpen]="showConfirmDelete"
     title="Delete item?"
     message="This will permanently remove the item from your Inbox."
@@ -70,6 +75,16 @@
     cancelLabel="Cancel"
     (confirm)="confirmDelete()"
     (cancel)="cancelDelete()"
+  ></app-confirm-modal>
+
+  <app-confirm-modal
+    [isOpen]="showConfirmBulkDelete"
+    [title]="'Delete ' + selectedCount + ' item' + (selectedCount > 1 ? 's' : '') + '?'"
+    message="This will permanently remove the selected item(s) from your Inbox."
+    confirmLabel="Delete"
+    cancelLabel="Cancel"
+    (confirm)="confirmBulkDelete()"
+    (cancel)="cancelBulkDelete()"
   ></app-confirm-modal>
 
   <router-outlet></router-outlet>

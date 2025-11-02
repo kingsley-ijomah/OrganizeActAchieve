@@ -13,12 +13,13 @@ import { InboxItem } from '../../services/data.service';
 export class TaskItemComponent implements AfterViewChecked {
   @Input() item!: InboxItem;
   @Input() isEditing: boolean = false;
+  @Input() isSelected: boolean = false;
   @Output() edit = new EventEmitter<InboxItem>();
   @Output() delete = new EventEmitter<number>();
   @Output() save = new EventEmitter<{ id: number; title: string }>();
   @Output() cancel = new EventEmitter<void>();
   @Output() select = new EventEmitter<InboxItem>();
-  @Output() complete = new EventEmitter<number>();
+  @Output() toggleSelect = new EventEmitter<number>();
 
   @ViewChild('editInput', { static: false }) editInputRef!: ElementRef<HTMLInputElement>;
   editingText: string = '';
@@ -67,9 +68,42 @@ export class TaskItemComponent implements AfterViewChecked {
     }
   }
 
-  onComplete(event: Event) {
+  onToggleSelect(event: Event) {
     event.stopPropagation();
-    this.complete.emit(this.item.id);
+    this.toggleSelect.emit(this.item.id);
+  }
+
+  getRelativeTime(dateIso?: string): string {
+    if (!dateIso) return '';
+    const date = new Date(dateIso);
+    const now = new Date();
+    const diffTime = now.getTime() - date.getTime();
+    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+    
+    if (diffDays === 0) {
+      return 'Today';
+    } else if (diffDays === 1) {
+      return '1 day ago';
+    } else if (diffDays < 7) {
+      return `${diffDays} days ago`;
+    } else if (diffDays < 14) {
+      return '1 week ago';
+    } else if (diffDays < 30) {
+      const weeks = Math.floor(diffDays / 7);
+      return `${weeks} week${weeks > 1 ? 's' : ''} ago`;
+    } else if (diffDays < 60) {
+      return '1 month ago';
+    } else {
+      const months = Math.floor(diffDays / 30);
+      return `${months} month${months > 1 ? 's' : ''} ago`;
+    }
+  }
+
+  get displayDate(): string {
+    // Use updatedAt if available, otherwise use createdAt
+    const dateToUse = this.item.updatedAt || this.item.createdAt;
+    const relativeTime = this.getRelativeTime(dateToUse);
+    return relativeTime ? `Updated: ${relativeTime}` : '';
   }
 }
 

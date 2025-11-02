@@ -4,6 +4,7 @@ export interface InboxItem {
   id: number;
   title: string;
   createdAt?: string; // ISO string
+  updatedAt?: string; // ISO string - last edit time
 }
 
 export interface Project {
@@ -31,42 +32,48 @@ export interface ProjectTask {
   providedIn: 'root'
 })
 export class DataService {
+  private static getDateOffset(days: number): string {
+    const date = new Date();
+    date.setDate(date.getDate() - days);
+    return date.toISOString();
+  }
+
   private inboxItems: InboxItem[] = [
-    { id: 1, title: 'Review project proposal', createdAt: new Date().toISOString() },
-    { id: 2, title: 'Email client for feedback' },
-    { id: 3, title: 'Plan weekly review' },
-    { id: 4, title: 'Organize workspace' },
-    { id: 5, title: 'Schedule team meeting' },
-    { id: 6, title: 'Update project documentation' },
-    { id: 7, title: 'Follow up on pending invoices' },
-    { id: 8, title: 'Research new design trends' },
-    { id: 9, title: 'Prepare presentation slides' },
-    { id: 10, title: 'Review code changes' },
-    { id: 11, title: 'Book flight tickets' },
-    { id: 12, title: 'Call dentist for appointment' },
-    { id: 13, title: 'Buy groceries for the week' },
-    { id: 14, title: 'Finish reading book chapter' },
-    { id: 15, title: 'Update personal website' },
-    { id: 16, title: 'Organize email inbox' },
-    { id: 17, title: 'Plan weekend activities' },
-    { id: 18, title: 'Review monthly expenses' },
-    { id: 19, title: 'Learn new programming language' },
-    { id: 20, title: 'Schedule car maintenance' },
-    { id: 21, title: 'Write blog post about productivity' },
-    { id: 22, title: 'Set up new development environment' },
-    { id: 23, title: 'Update resume' },
-    { id: 24, title: 'Create project timeline' },
-    { id: 25, title: 'Contact potential collaborators' },
-    { id: 26, title: 'Review and respond to messages' },
-    { id: 27, title: 'Organize digital files' },
-    { id: 28, title: 'Plan exercise routine' },
-    { id: 29, title: 'Research investment options' },
-    { id: 30, title: 'Update software licenses' },
-    { id: 31, title: 'Clean up browser bookmarks' },
-    { id: 32, title: 'Schedule doctor appointment' },
-    { id: 33, title: 'Review subscription services' },
-    { id: 34, title: 'Backup important files' },
-    { id: 35, title: 'Plan birthday party', createdAt: new Date().toISOString() },
+    { id: 1, title: 'Review project proposal', createdAt: DataService.getDateOffset(0), updatedAt: DataService.getDateOffset(0) }, // Today
+    { id: 2, title: 'Email client for feedback', createdAt: DataService.getDateOffset(1), updatedAt: DataService.getDateOffset(1) }, // 1 day ago
+    { id: 3, title: 'Plan weekly review', createdAt: DataService.getDateOffset(2), updatedAt: DataService.getDateOffset(2) }, // 2 days ago
+    { id: 4, title: 'Organize workspace', createdAt: DataService.getDateOffset(3), updatedAt: DataService.getDateOffset(3) }, // 3 days ago
+    { id: 5, title: 'Schedule team meeting', createdAt: DataService.getDateOffset(5), updatedAt: DataService.getDateOffset(5) }, // 5 days ago
+    { id: 6, title: 'Update project documentation', createdAt: DataService.getDateOffset(8), updatedAt: DataService.getDateOffset(8) }, // 1 week ago
+    { id: 7, title: 'Follow up on pending invoices', createdAt: DataService.getDateOffset(10), updatedAt: DataService.getDateOffset(10) }, // 1 week ago
+    { id: 8, title: 'Research new design trends', createdAt: DataService.getDateOffset(14), updatedAt: DataService.getDateOffset(14) }, // 2 weeks ago
+    { id: 9, title: 'Prepare presentation slides', createdAt: DataService.getDateOffset(16), updatedAt: DataService.getDateOffset(16) }, // 2 weeks ago
+    { id: 10, title: 'Review code changes', createdAt: DataService.getDateOffset(21), updatedAt: DataService.getDateOffset(21) }, // 3 weeks ago
+    { id: 11, title: 'Book flight tickets', createdAt: DataService.getDateOffset(0), updatedAt: DataService.getDateOffset(0) }, // Today
+    { id: 12, title: 'Call dentist for appointment', createdAt: DataService.getDateOffset(1), updatedAt: DataService.getDateOffset(1) }, // 1 day ago
+    { id: 13, title: 'Buy groceries for the week', createdAt: DataService.getDateOffset(4), updatedAt: DataService.getDateOffset(4) }, // 4 days ago
+    { id: 14, title: 'Finish reading book chapter', createdAt: DataService.getDateOffset(6), updatedAt: DataService.getDateOffset(6) }, // 6 days ago
+    { id: 15, title: 'Update personal website', createdAt: DataService.getDateOffset(9), updatedAt: DataService.getDateOffset(9) }, // 1 week ago
+    { id: 16, title: 'Organize email inbox', createdAt: DataService.getDateOffset(12), updatedAt: DataService.getDateOffset(12) }, // 1 week ago
+    { id: 17, title: 'Plan weekend activities', createdAt: DataService.getDateOffset(15), updatedAt: DataService.getDateOffset(15) }, // 2 weeks ago
+    { id: 18, title: 'Review monthly expenses', createdAt: DataService.getDateOffset(18), updatedAt: DataService.getDateOffset(18) }, // 2 weeks ago
+    { id: 19, title: 'Learn new programming language', createdAt: DataService.getDateOffset(22), updatedAt: DataService.getDateOffset(22) }, // 3 weeks ago
+    { id: 20, title: 'Schedule car maintenance', createdAt: DataService.getDateOffset(25), updatedAt: DataService.getDateOffset(25) }, // 3 weeks ago
+    { id: 21, title: 'Write blog post about productivity', createdAt: DataService.getDateOffset(30), updatedAt: DataService.getDateOffset(30) }, // 1 month ago
+    { id: 22, title: 'Set up new development environment', createdAt: DataService.getDateOffset(35), updatedAt: DataService.getDateOffset(35) }, // 1 month ago
+    { id: 23, title: 'Update resume', createdAt: DataService.getDateOffset(45), updatedAt: DataService.getDateOffset(45) }, // 1 month ago
+    { id: 24, title: 'Create project timeline', createdAt: DataService.getDateOffset(50), updatedAt: DataService.getDateOffset(50) }, // 1 month ago
+    { id: 25, title: 'Contact potential collaborators', createdAt: DataService.getDateOffset(60), updatedAt: DataService.getDateOffset(60) }, // 2 months ago
+    { id: 26, title: 'Review and respond to messages', createdAt: DataService.getDateOffset(75), updatedAt: DataService.getDateOffset(75) }, // 2 months ago
+    { id: 27, title: 'Organize digital files', createdAt: DataService.getDateOffset(90), updatedAt: DataService.getDateOffset(90) }, // 3 months ago
+    { id: 28, title: 'Plan exercise routine', createdAt: DataService.getDateOffset(2), updatedAt: DataService.getDateOffset(2) }, // 2 days ago
+    { id: 29, title: 'Research investment options', createdAt: DataService.getDateOffset(7), updatedAt: DataService.getDateOffset(7) }, // 1 week ago
+    { id: 30, title: 'Update software licenses', createdAt: DataService.getDateOffset(13), updatedAt: DataService.getDateOffset(13) }, // 1 week ago
+    { id: 31, title: 'Clean up browser bookmarks', createdAt: DataService.getDateOffset(20), updatedAt: DataService.getDateOffset(20) }, // 2 weeks ago
+    { id: 32, title: 'Schedule doctor appointment', createdAt: DataService.getDateOffset(28), updatedAt: DataService.getDateOffset(28) }, // 4 weeks ago (1 month)
+    { id: 33, title: 'Review subscription services', createdAt: DataService.getDateOffset(40), updatedAt: DataService.getDateOffset(40) }, // 1 month ago
+    { id: 34, title: 'Backup important files', createdAt: DataService.getDateOffset(55), updatedAt: DataService.getDateOffset(55) }, // 1 month ago
+    { id: 35, title: 'Plan birthday party', createdAt: DataService.getDateOffset(0), updatedAt: DataService.getDateOffset(0) }, // Today
   ];
 
   private projects: Project[] = [
