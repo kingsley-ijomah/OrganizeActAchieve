@@ -1,20 +1,42 @@
+.capture-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 799;
+  animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
 .capture-container {
   position: fixed;
-  bottom: calc(80px + env(safe-area-inset-bottom, 0px));
-  left: 16px;
-  right: 16px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   z-index: 800;
   animation: slideUp 0.2s ease;
+  width: calc(100% - 32px);
+  max-width: 480px;
 }
 
 @keyframes slideUp {
   from {
     opacity: 0;
-    transform: translateY(10px);
+    transform: translate(-50%, -40%);
   }
   to {
     opacity: 1;
-    transform: translateY(0);
+    transform: translate(-50%, -50%);
   }
 }
 
@@ -26,7 +48,7 @@
   border: 1.5px solid #e0e0e0;
   border-radius: 12px;
   padding: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
 }
 
 .capture-input {
@@ -70,6 +92,14 @@
   user-select: none;
 }
 
+.close-btn .material-icons {
+  color: #666;
+}
+
+.close-btn:hover .material-icons {
+  color: #e63946;
+}
+
 @media (prefers-color-scheme: dark) {
   .capture-row {
     background: #2a2a2a;
@@ -86,6 +116,14 @@
 
   .icon-btn .material-icons {
     color: #5aa0f2;
+  }
+
+  .close-btn .material-icons {
+    color: #999;
+  }
+
+  .close-btn:hover .material-icons {
+    color: #ff6b7a;
   }
 }
 

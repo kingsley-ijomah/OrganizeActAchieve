@@ -1,3 +1,4 @@
+<div class="capture-backdrop" *ngIf="isVisible" (click)="onClose()"></div>
 <div class="capture-container" *ngIf="isVisible">
   <div class="capture-row">
     <input 
@@ -11,6 +12,9 @@
     />
     <button class="icon-btn mic-btn" type="button" aria-label="Record voice">
       <span class="material-icons">mic</span>
+    </button>
+    <button class="icon-btn close-btn" type="button" (click)="onClose()" aria-label="Close">
+      <span class="material-icons">close</span>
     </button>
   </div>
 </div>
