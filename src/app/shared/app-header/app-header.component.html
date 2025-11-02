@@ -1,0 +1,28 @@
+<header class="app-header">
+  <h1 class="app-title">Organize Act Achieve</h1>
+  <div class="profile-container">
+    <button class="profile-btn" type="button" (click)="toggleDropdown($event)" aria-label="Profile" [class.active]="showDropdown">
+      <span class="material-icons profile-icon">account_circle</span>
+    </button>
+    <div class="dropdown-menu" *ngIf="showDropdown">
+      <button class="menu-item" type="button" (click)="onMenuItemClick('Profile')">
+        <span class="material-icons">person</span>
+        <span>Profile</span>
+      </button>
+      <button class="menu-item" type="button" (click)="onMenuItemClick('Settings')">
+        <span class="material-icons">settings</span>
+        <span>Settings</span>
+      </button>
+      <button class="menu-item" type="button" (click)="onMenuItemClick('Help')">
+        <span class="material-icons">help_outline</span>
+        <span>Help</span>
+      </button>
+      <div class="menu-divider"></div>
+      <button class="menu-item logout" type="button" (click)="onMenuItemClick('Logout')">
+        <span class="material-icons">logout</span>
+        <span>Logout</span>
+      </button>
+    </div>
+  </div>
+</header>
+

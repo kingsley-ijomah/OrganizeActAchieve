@@ -1,10 +1,12 @@
 <div class="inbox-container">
   <header class="inbox-header">
-    <div>
+    <div class="inbox-title-section">
       <h1 class="inbox-title">Inbox</h1>
       <span class="item-count-badge">{{ inboxItems.length }} items</span>
     </div>
-    <button class="filter-link" type="button" (click)="openFilter()" *ngIf="!hasSelectedItems">Filter</button>
+    <button class="filter-btn" type="button" (click)="openFilter()" *ngIf="!hasSelectedItems" aria-label="Filter">
+      <span class="material-icons">filter_list</span>
+    </button>
   </header>
 
   <div class="selection-bar" *ngIf="hasSelectedItems">
