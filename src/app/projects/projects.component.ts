@@ -104,7 +104,8 @@ export class ProjectsComponent implements OnInit {
         id: newId,
         name: this.newProjectName.trim(),
         totalTasks: 0,
-        completedTasks: 0
+        completedTasks: 0,
+        createdAt: new Date().toISOString()
       };
       this.dataService.addProject(newProject);
       this.projects = this.dataService.getProjects();

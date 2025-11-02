@@ -83,6 +83,9 @@
 }
 
 .selection-bar {
+  position: sticky;
+  top: 60px;
+  z-index: 500;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -92,6 +95,7 @@
   border-radius: 12px;
   margin-bottom: 16px;
   animation: slideDown 0.2s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 @keyframes slideDown {
@@ -264,6 +268,7 @@
   .selection-bar {
     background: #2a2a3a;
     border-color: #5aa0f2;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
   }
 
   .selection-count {

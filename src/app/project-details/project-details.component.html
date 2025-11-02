@@ -21,39 +21,49 @@
       [completed]="project.completedTasks"
       [total]="project.totalTasks"
     ></app-progress-stat>
+    <button class="filter-btn" type="button" (click)="openFilter()" aria-label="Filter">
+      <span class="material-icons">filter_list</span>
+    </button>
   </section>
 
-  <section class="tasks">
-    <div class="filter-bar">
-      <button type="button" class="seg-btn" [class.active]="filter==='all'" (click)="filter='all'">All</button>
-      <button type="button" class="seg-btn" [class.active]="filter==='today'" (click)="filter='today'">Today</button>
-      <button type="button" class="seg-btn" [class.active]="filter==='week'" (click)="filter='week'">This Week</button>
-      <button type="button" class="seg-btn" [class.active]="filter==='no_due'" (click)="filter='no_due'">No Due</button>
-      <button type="button" class="seg-btn" [class.active]="filter==='completed'" (click)="filter='completed'">Completed</button>
+  <div class="selection-bar" *ngIf="hasSelectedTasks">
+    <span class="selection-count">{{ selectedCount }} selected</span>
+    <div class="selection-actions">
+      <button class="selection-btn complete-btn" type="button" (click)="markSelectedAsComplete()" aria-label="Mark as complete">
+        <span class="material-icons">check</span>
+        <span>Mark Done</span>
+      </button>
+      <button class="selection-btn cancel-btn" type="button" (click)="clearSelection()" aria-label="Clear selection">
+        <span class="material-icons">close</span>
+        <span>Cancel</span>
+      </button>
     </div>
+  </div>
+
+  <section class="tasks">
     <ul class="task-list">
-      <li *ngFor="let t of filteredTasks" class="task-item" [class.completed]="t.status==='completed'">
-        <button class="icon-btn" type="button" (click)="toggleComplete(t)"><span class="material-icons">{{ t.status === 'completed' ? 'check_circle' : 'radio_button_unchecked' }}</span></button>
+      <li *ngFor="let t of filteredTasks" class="task-item" [class.completed]="t.status==='completed'" [class.selecting]="hasSelectedTasks" (click)="!hasSelectedTasks && openTaskModal(t)">
+        <button class="icon-btn" type="button" (click)="toggleSelect(t.id, $event)" [class.selected]="isSelected(t.id)"><span class="material-icons">{{ isSelected(t.id) ? 'check_box' : (t.status === 'completed' ? 'check_box' : 'check_box_outline_blank') }}</span></button>
         <div class="task-main">
           <div class="title-row">
             <span class="task-title">{{ t.title }}</span>
-            <button class="view-link" type="button" (click)="openTaskModal(t)">View</button>
+          </div>
+          <div class="task-description" *ngIf="t.description">
+            {{ t.description }}
           </div>
           <div class="meta-row">
-            <div class="chips">
-              <span *ngIf="t.context" class="chip">&#64;{{ t.context }}</span>
-              <span *ngIf="t.priority" class="chip priority-{{ t.priority }}">{{ t.priority | titlecase }}</span>
-              <span *ngIf="t.dueDate" class="chip due">{{ isToday(t.dueDate) ? 'Today' : (t.dueDate | date:'MMM d') }}</span>
+            <div class="chips-wrapper">
+              <div class="chips">
+                <span *ngIf="t.status" class="chip status-{{ t.status }}">{{ getStatusLabel(t.status) }}</span>
+                <span *ngIf="t.context" class="chip">&#64;{{ t.context }}</span>
+                <span *ngIf="t.priority" class="chip priority-{{ t.priority }}">{{ t.priority | titlecase }}</span>
+                <span *ngIf="t.dueDate" class="chip due">{{ isToday(t.dueDate) ? 'Today' : (t.dueDate | date:'MMM d') }}</span>
+              </div>
+              <div class="pomodoros" *ngIf="t.pomodorosPlanned">
+                <span class="tomato-icon completed" *ngFor="let i of getArray(t.pomodorosDone || 0)">🍅</span>
+                <span class="tomato-icon remaining" *ngFor="let i of getArray((t.pomodorosPlanned || 0) - (t.pomodorosDone || 0))">🍅</span>
+              </div>
             </div>
-            <div class="pomodoros" *ngIf="t.pomodorosPlanned">
-              <span class="tomato-icon completed" *ngFor="let i of getArray(t.pomodorosDone || 0)">🍅</span>
-              <span class="tomato-icon remaining" *ngFor="let i of getArray((t.pomodorosPlanned || 0) - (t.pomodorosDone || 0))">🍅</span>
-            </div>
-          </div>
-          <div class="actions" *ngIf="filter!=='completed'">
-            <button class="mini-btn" type="button" title="Defer" (click)="openAdjustForDefer(t)"><span class="material-icons">schedule</span></button>
-            <button class="mini-btn" type="button" title="Planned Pomodoros" (click)="openAdjustForPlanned(t)"><span class="material-icons">timer</span></button>
-            <button class="mini-btn" type="button" title="Completed Pomodoros" (click)="openAdjustForDone(t)"><span class="material-icons">check</span></button>
           </div>
         </div>
       </li>
@@ -98,6 +108,23 @@
   (close)="closeCreateModal()"
 ></app-task-create-modal>
 
-<button class="fab" type="button" (click)="openCreateModal()" *ngIf="project" aria-label="Create new task">
+<app-task-filter
+  [value]="filter"
+  [isOpen]="showFilter"
+  (change)="onFilterChange($event)"
+  (close)="closeFilter()"
+></app-task-filter>
+
+<app-confirm-modal
+  [isOpen]="showConfirmComplete"
+  [title]="'Mark ' + selectedCount + ' task' + (selectedCount > 1 ? 's' : '') + ' as done?'"
+  message="This will mark the selected task(s) as completed."
+  confirmLabel="Mark Done"
+  cancelLabel="Cancel"
+  (confirm)="confirmComplete()"
+  (cancel)="cancelComplete()"
+></app-confirm-modal>
+
+<button class="fab" type="button" (click)="openCreateModal()" *ngIf="project && !hasSelectedTasks" aria-label="Create new task">
   <span class="material-icons">add</span>
 </button>

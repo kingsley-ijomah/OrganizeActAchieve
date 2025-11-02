@@ -12,6 +12,7 @@ export interface Project {
   name: string;
   totalTasks: number;
   completedTasks: number;
+  createdAt?: string; // ISO string
 }
 
 export interface ProjectTask {
@@ -102,24 +103,24 @@ export class DataService {
   // Simple in-memory task store per project
   private projectIdToTasks: Record<number, ProjectTask[]> = {
     1: [
-      { id: 1, projectId: 1, title: 'Audit current site', status: 'in_progress', context: 'computer', priority: 'high', dueDate: this.isoOffset(1), pomodorosPlanned: 6, pomodorosDone: 2, createdAt: this.isoOffset(-2) },
-      { id: 2, projectId: 1, title: 'Define color palette', status: 'not_started', context: 'computer', priority: 'normal', dueDate: this.isoOffset(5), pomodorosPlanned: 3, pomodorosDone: 0, createdAt: this.isoOffset(-1) },
-      { id: 5, projectId: 1, title: 'User interviews', status: 'not_started', context: 'phone', priority: 'low', dueDate: this.isoOffset(0), pomodorosPlanned: 2, pomodorosDone: 0, createdAt: this.isoOffset(-1) },
-      { id: 6, projectId: 1, title: 'Create wireframes', status: 'not_started', context: 'computer', priority: 'high', dueDate: this.isoOffset(3), pomodorosPlanned: 4, pomodorosDone: 0, createdAt: this.isoOffset(-1) },
-      { id: 7, projectId: 1, title: 'Prep stakeholder deck', status: 'in_progress', context: 'computer', priority: 'normal', pomodorosPlanned: 3, pomodorosDone: 1, createdAt: this.isoOffset(-2) },
-      { id: 8, projectId: 1, title: 'Export design tokens', status: 'completed', context: 'computer', priority: 'normal', dueDate: this.isoOffset(-1), pomodorosPlanned: 1, pomodorosDone: 1, createdAt: this.isoOffset(-3) },
+      { id: 1, projectId: 1, title: 'Comprehensive audit and performance analysis of current website infrastructure including user experience metrics', status: 'in_progress', context: 'computer', priority: 'high', dueDate: this.isoOffset(1), pomodorosPlanned: 4, pomodorosDone: 2, createdAt: this.isoOffset(-2), description: 'Perform a thorough review of the existing website, analyzing page load times, accessibility compliance, SEO metrics, and user interaction patterns. Document all findings with actionable recommendations.' },
+      { id: 2, projectId: 1, title: 'Define comprehensive color palette and design system tokens for brand consistency', status: 'not_started', context: 'computer', priority: 'normal', dueDate: this.isoOffset(5), pomodorosPlanned: 3, pomodorosDone: 0, createdAt: this.isoOffset(-1), description: 'Create a cohesive color system that aligns with brand guidelines, including primary, secondary, and accent colors with light and dark mode variations.' },
+      { id: 5, projectId: 1, title: 'Conduct user interviews and gather qualitative feedback on current product experience', status: 'not_started', context: 'phone', priority: 'low', dueDate: this.isoOffset(0), pomodorosPlanned: 2, pomodorosDone: 0, createdAt: this.isoOffset(-1), description: 'Schedule and conduct interviews with 10-15 target users to understand pain points, desired features, and overall satisfaction with the current design.' },
+      { id: 6, projectId: 1, title: 'Create detailed wireframes and user flow diagrams for new checkout process', status: 'not_started', context: 'computer', priority: 'high', dueDate: this.isoOffset(3), pomodorosPlanned: 4, pomodorosDone: 0, createdAt: this.isoOffset(-1), description: 'Design low-fidelity wireframes for the entire checkout experience, including cart review, payment method selection, shipping options, and order confirmation screens.' },
+      { id: 7, projectId: 1, title: 'Prepare comprehensive stakeholder presentation deck with project updates and timeline', status: 'in_progress', context: 'computer', priority: 'normal', pomodorosPlanned: 3, pomodorosDone: 1, createdAt: this.isoOffset(-2), description: 'Compile progress updates, key metrics, design decisions, and next steps into a presentation format suitable for executive review and stakeholder alignment.' },
+      { id: 8, projectId: 1, title: 'Export design tokens and component specifications for development handoff', status: 'completed', context: 'computer', priority: 'normal', dueDate: this.isoOffset(-1), pomodorosPlanned: 1, pomodorosDone: 1, createdAt: this.isoOffset(-3), description: 'Extract all design tokens (colors, spacing, typography) and component specifications from Figma and prepare them in a format that developers can easily implement.' },
     ],
     2: [
-      { id: 3, projectId: 2, title: 'Auth flow', status: 'completed', context: 'computer', priority: 'high', dueDate: this.isoOffset(-1), pomodorosPlanned: 4, pomodorosDone: 4, createdAt: this.isoOffset(-7) },
-      { id: 4, projectId: 2, title: 'Onboarding screens', status: 'not_started', context: 'phone', priority: 'normal', pomodorosPlanned: 2, pomodorosDone: 0, createdAt: this.isoOffset(-3) },
-      { id: 9, projectId: 2, title: 'Implement dark mode', status: 'not_started', context: 'computer', priority: 'low', dueDate: this.isoOffset(0), pomodorosPlanned: 2, pomodorosDone: 0, createdAt: this.isoOffset(-1) },
-      { id: 10, projectId: 2, title: 'Crash analytics wiring', status: 'not_started', context: 'computer', priority: 'high', dueDate: this.isoOffset(6), pomodorosPlanned: 3, pomodorosDone: 0, createdAt: this.isoOffset(-1) },
-      { id: 11, projectId: 2, title: 'App icon variants', status: 'in_progress', context: 'computer', priority: 'normal', pomodorosPlanned: 2, pomodorosDone: 1, createdAt: this.isoOffset(-2) },
+      { id: 3, projectId: 2, title: 'Implement secure authentication flow with multi-factor authentication support', status: 'completed', context: 'computer', priority: 'high', dueDate: this.isoOffset(-1), pomodorosPlanned: 4, pomodorosDone: 4, createdAt: this.isoOffset(-7), description: 'Build complete authentication system including login, registration, password reset, and MFA options using secure token-based authentication.' },
+      { id: 4, projectId: 2, title: 'Design and implement comprehensive onboarding experience for new users', status: 'not_started', context: 'phone', priority: 'normal', pomodorosPlanned: 2, pomodorosDone: 0, createdAt: this.isoOffset(-3), description: 'Create engaging onboarding screens that introduce key features, guide users through initial setup, and help them understand how to get the most value from the app.' },
+      { id: 9, projectId: 2, title: 'Implement system-wide dark mode with theme switching capabilities', status: 'not_started', context: 'computer', priority: 'low', dueDate: this.isoOffset(0), pomodorosPlanned: 2, pomodorosDone: 0, createdAt: this.isoOffset(-1), description: 'Add dark mode support across all screens with proper contrast ratios, smooth transitions, and user preference persistence.' },
+      { id: 10, projectId: 2, title: 'Integrate crash reporting and analytics tools for production monitoring', status: 'not_started', context: 'computer', priority: 'high', dueDate: this.isoOffset(6), pomodorosPlanned: 3, pomodorosDone: 0, createdAt: this.isoOffset(-1), description: 'Set up Sentry for crash reporting, configure error tracking, and implement analytics to monitor app performance and user behavior in production.' },
+      { id: 11, projectId: 2, title: 'Design multiple app icon variants for A/B testing and market differentiation', status: 'in_progress', context: 'computer', priority: 'normal', pomodorosPlanned: 2, pomodorosDone: 1, createdAt: this.isoOffset(-2), description: 'Create several app icon options with different styles and color schemes to test user preference and improve app store conversion rates.' },
     ],
     3: [
-      { id: 12, projectId: 3, title: 'Audience segments', status: 'not_started', context: 'computer', priority: 'high', dueDate: this.isoOffset(2), pomodorosPlanned: 3, pomodorosDone: 0, createdAt: this.isoOffset(-1) },
-      { id: 13, projectId: 3, title: 'Draft email copy', status: 'not_started', context: 'computer', priority: 'normal', dueDate: this.isoOffset(0), pomodorosPlanned: 2, pomodorosDone: 0, createdAt: this.isoOffset(-1) },
-      { id: 14, projectId: 3, title: 'Set up UTM links', status: 'completed', context: 'computer', priority: 'low', pomodorosPlanned: 1, pomodorosDone: 1, createdAt: this.isoOffset(-4) },
+      { id: 12, projectId: 3, title: 'Identify and segment target audience personas for personalized marketing campaigns', status: 'not_started', context: 'computer', priority: 'high', dueDate: this.isoOffset(2), pomodorosPlanned: 3, pomodorosDone: 0, createdAt: this.isoOffset(-1), description: 'Analyze user data to create detailed audience segments based on demographics, behavior patterns, purchase history, and engagement levels for targeted messaging.' },
+      { id: 13, projectId: 3, title: 'Draft compelling email campaign copy for product launch announcement', status: 'not_started', context: 'computer', priority: 'normal', dueDate: this.isoOffset(0), pomodorosPlanned: 2, pomodorosDone: 0, createdAt: this.isoOffset(-1), description: 'Write engaging email content that highlights key product features, benefits, and includes clear call-to-action buttons to drive conversions.' },
+      { id: 14, projectId: 3, title: 'Set up UTM tracking links for all campaign channels and monitor performance', status: 'completed', context: 'computer', priority: 'low', pomodorosPlanned: 1, pomodorosDone: 1, createdAt: this.isoOffset(-4), description: 'Generate and organize UTM parameters for email, social media, and paid advertising campaigns to track campaign effectiveness and attribution.' },
     ],
   };
 
@@ -141,17 +142,37 @@ export class DataService {
   }
 
   getProjects(): Project[] {
-    return this.projects;
+    // Ensure createdAt exists for legacy projects
+    this.projects.forEach(p => { 
+      if (!p.createdAt) {
+        p.createdAt = new Date().toISOString();
+      }
+    });
+    // Sort by createdAt descending (newest first)
+    return [...this.projects].sort((a, b) => {
+      const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+      const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+      return dateB - dateA; // Descending order
+    });
   }
 
   getProjectTasks(projectId: number): ProjectTask[] {
-    return this.projectIdToTasks[projectId] || [];
+    const tasks = this.projectIdToTasks[projectId] || [];
+    // Ensure pomodoros don't exceed max of 4
+    return tasks.map(task => ({
+      ...task,
+      pomodorosPlanned: task.pomodorosPlanned != null ? Math.min(4, Math.max(0, task.pomodorosPlanned)) : undefined,
+      pomodorosDone: task.pomodorosDone != null ? Math.min(4, Math.max(0, task.pomodorosDone)) : undefined
+    }));
   }
 
   addTaskToProjectWithDetails(projectId: number, task: Omit<ProjectTask, 'id' | 'projectId'>) {
     const list = this.projectIdToTasks[projectId] || (this.projectIdToTasks[projectId] = []);
     const newId = Math.max(0, ...Object.values(this.projectIdToTasks).flat().map(t => t.id)) + 1;
-    list.push({ id: newId, projectId, title: task.title, status: task.status, description: task.description, context: task.context, priority: task.priority, dueDate: task.dueDate, pomodorosPlanned: task.pomodorosPlanned, pomodorosDone: task.pomodorosDone, createdAt: new Date().toISOString() });
+    // Cap pomodoros at 4 (max allowed)
+    const pomodorosPlanned = task.pomodorosPlanned != null ? Math.min(4, Math.max(0, task.pomodorosPlanned)) : undefined;
+    const pomodorosDone = task.pomodorosDone != null ? Math.min(4, Math.max(0, task.pomodorosDone)) : undefined;
+    list.push({ id: newId, projectId, title: task.title, status: task.status, description: task.description, context: task.context, priority: task.priority, dueDate: task.dueDate, pomodorosPlanned, pomodorosDone, createdAt: new Date().toISOString() });
     const project = this.projects.find(p => p.id === projectId);
     if (project) {
       project.totalTasks = (project.totalTasks || 0) + 1;

@@ -1,0 +1,29 @@
+<div class="modal-overlay" *ngIf="isOpen" (click)="onClose()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2 class="modal-title">Filter</h2>
+      <button class="modal-close-btn" type="button" (click)="onClose()" aria-label="Close">
+        <span class="material-icons">close</span>
+      </button>
+    </div>
+
+    <div class="modal-body">
+      <label class="field">
+        <span class="field-label">Show tasks</span>
+        <select class="select-input" [(ngModel)]="localValue">
+          <option value="all">All</option>
+          <option value="today">Today</option>
+          <option value="week">This Week</option>
+          <option value="no_due">No Due Date</option>
+          <option value="completed">Completed</option>
+        </select>
+      </label>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn secondary" type="button" (click)="onClose()">Cancel</button>
+      <button class="btn primary" type="button" (click)="apply()">Apply</button>
+    </div>
+  </div>
+</div>
+

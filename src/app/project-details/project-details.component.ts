@@ -6,12 +6,14 @@ import { FormsModule } from '@angular/forms';
 import { NumberAdjustModalComponent } from '../shared/number-adjust-modal/number-adjust-modal.component';
 import { TaskEditModalComponent, TaskEditModel } from '../shared/task-edit-modal/task-edit-modal.component';
 import { TaskCreateModalComponent, TaskCreateModel } from '../shared/task-create-modal/task-create-modal.component';
+import { TaskFilterComponent, TaskFilterValue } from '../shared/task-filter/task-filter.component';
+import { ConfirmModalComponent } from '../shared/confirm-modal/confirm-modal.component';
 import { DataService, Project, ProjectTask } from '../services/data.service';
 
 @Component({
   selector: 'app-project-details',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule, ProgressStatComponent, NumberAdjustModalComponent, TaskEditModalComponent, TaskCreateModalComponent],
+  imports: [CommonModule, RouterModule, FormsModule, ProgressStatComponent, NumberAdjustModalComponent, TaskEditModalComponent, TaskCreateModalComponent, TaskFilterComponent, ConfirmModalComponent],
   templateUrl: './project-details.component.html',
   styleUrl: './project-details.component.scss'
 })
@@ -24,8 +26,13 @@ export class ProjectDetailsComponent {
   editingTitle = false;
   editableTitle = '';
 
+  // Selection state
+  selectedTaskIds = new Set<number>();
+  showConfirmComplete = false;
+
   // Derived sections
-  filter: 'all' | 'today' | 'week' | 'no_due' | 'completed' = 'all';
+  filter: TaskFilterValue = 'all';
+  showFilter = false;
   get filteredTasks() {
     switch (this.filter) {
       case 'today':
@@ -73,8 +80,55 @@ export class ProjectDetailsComponent {
     return d >= mon && d <= sun;
   }
 
-  toggleComplete(task: ProjectTask) {
-    task.status = task.status === 'completed' ? 'not_started' : 'completed';
+  get hasSelectedTasks(): boolean {
+    return this.selectedTaskIds.size > 0;
+  }
+
+  get selectedCount(): number {
+    return this.selectedTaskIds.size;
+  }
+
+  isSelected(taskId: number): boolean {
+    return this.selectedTaskIds.has(taskId);
+  }
+
+  toggleSelect(taskId: number, event?: Event) {
+    if (event) {
+      event.stopPropagation();
+    }
+    if (this.selectedTaskIds.has(taskId)) {
+      this.selectedTaskIds.delete(taskId);
+    } else {
+      this.selectedTaskIds.add(taskId);
+    }
+  }
+
+  clearSelection() {
+    this.selectedTaskIds.clear();
+  }
+
+  markSelectedAsComplete() {
+    if (this.selectedTaskIds.size === 0) return;
+    this.showConfirmComplete = true;
+  }
+
+  cancelComplete() {
+    this.showConfirmComplete = false;
+  }
+
+  confirmComplete() {
+    this.selectedTaskIds.forEach(taskId => {
+      const task = this.tasks.find(t => t.id === taskId);
+      if (task) {
+        task.status = 'completed';
+      }
+    });
+    // Update project completed tasks count
+    if (this.project) {
+      this.project.completedTasks = this.tasks.filter(t => t.status === 'completed').length;
+    }
+    this.selectedTaskIds.clear();
+    this.showConfirmComplete = false;
   }
 
   deferTask(task: ProjectTask, days: number) {
@@ -84,9 +138,9 @@ export class ProjectDetailsComponent {
     if (task.status === 'completed') task.status = 'not_started';
   }
 
-  incPomodoro(task: ProjectTask) { task.pomodorosPlanned = (task.pomodorosPlanned || 0) + 1; }
+  incPomodoro(task: ProjectTask) { task.pomodorosPlanned = Math.min(4, (task.pomodorosPlanned || 0) + 1); }
   decPomodoro(task: ProjectTask) { task.pomodorosPlanned = Math.max(0, (task.pomodorosPlanned || 0) - 1); }
-  incPomodoroDone(task: ProjectTask) { task.pomodorosDone = (task.pomodorosDone || 0) + 1; }
+  incPomodoroDone(task: ProjectTask) { task.pomodorosDone = Math.min(4, (task.pomodorosDone || 0) + 1); }
 
   startEditTitle() { this.editingTitle = true; }
   cancelEditTitle() { this.editingTitle = false; this.editableTitle = this.project?.name || ''; }
@@ -128,8 +182,8 @@ export class ProjectDetailsComponent {
     this.adjustTitle = 'Planned Pomodoros';
     this.adjustLabel = '25-minute blocks';
     this.adjustMin = 0; this.adjustMax = 4; this.adjustStep = 1; this.adjustSuffix='';
-    this.adjustValue = task.pomodorosPlanned || 0;
-    this.adjustApply = () => { task.pomodorosPlanned = this.adjustValue; };
+    this.adjustValue = Math.min(4, task.pomodorosPlanned || 0);
+    this.adjustApply = () => { task.pomodorosPlanned = Math.min(4, Math.max(0, this.adjustValue)); };
     this.showAdjust = true;
   }
 
@@ -137,8 +191,8 @@ export class ProjectDetailsComponent {
     this.adjustTitle = 'Completed Pomodoros';
     this.adjustLabel = '25-minute blocks';
     this.adjustMin = 0; this.adjustMax = 4; this.adjustStep = 1; this.adjustSuffix='';
-    this.adjustValue = task.pomodorosDone || 0;
-    this.adjustApply = () => { task.pomodorosDone = this.adjustValue; };
+    this.adjustValue = Math.min(4, task.pomodorosDone || 0);
+    this.adjustApply = () => { task.pomodorosDone = Math.min(4, Math.max(0, this.adjustValue)); };
     this.showAdjust = true;
   }
 
@@ -175,8 +229,8 @@ export class ProjectDetailsComponent {
     t.status = model.status ? model.status : undefined;
     t.priority = model.priority;
     t.dueDate = model.dueDate ? new Date(model.dueDate).toISOString() : undefined;
-    t.pomodorosPlanned = model.pomodorosPlanned || 0;
-    t.pomodorosDone = model.pomodorosDone || 0;
+    t.pomodorosPlanned = model.pomodorosPlanned != null ? Math.min(4, Math.max(0, model.pomodorosPlanned)) : 0;
+    t.pomodorosDone = model.pomodorosDone != null ? Math.min(4, Math.max(0, model.pomodorosDone)) : 0;
     this.closeTaskModal();
   }
 
@@ -200,8 +254,8 @@ export class ProjectDetailsComponent {
       status: model.status || 'not_started',
       priority: model.priority,
       dueDate: model.dueDate ? new Date(model.dueDate).toISOString() : undefined,
-      pomodorosPlanned: model.pomodorosPlanned || 0,
-      pomodorosDone: model.pomodorosDone || 0,
+      pomodorosPlanned: model.pomodorosPlanned != null ? Math.min(4, Math.max(0, model.pomodorosPlanned)) : 0,
+      pomodorosDone: model.pomodorosDone != null ? Math.min(4, Math.max(0, model.pomodorosDone)) : 0,
       createdAt: new Date().toISOString(),
     };
     this.data.addTaskToProjectWithDetails(this.project.id, newTask);
@@ -211,5 +265,29 @@ export class ProjectDetailsComponent {
       this.project.totalTasks = (this.project.totalTasks || 0) + 1;
     }
     this.closeCreateModal();
+  }
+
+  openFilter() {
+    this.showFilter = true;
+  }
+
+  closeFilter() {
+    this.showFilter = false;
+  }
+
+  onFilterChange(val: TaskFilterValue) {
+    this.filter = val;
+    this.closeFilter();
+  }
+
+  getStatusLabel(status?: string): string {
+    if (!status) return '';
+    const statusMap: Record<string, string> = {
+      'not_started': 'Not Started',
+      'in_progress': 'In Progress',
+      'completed': 'Completed',
+      'deferred': 'Deferred'
+    };
+    return statusMap[status] || status;
   }
 }
