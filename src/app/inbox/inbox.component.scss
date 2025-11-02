@@ -51,7 +51,7 @@
 .fab-inbox {
   position: fixed;
   bottom: calc(80px + env(safe-area-inset-bottom, 0px));
-  left: 16px;
+  right: 16px;
   width: 56px;
   height: 56px;
   border-radius: 50%;
