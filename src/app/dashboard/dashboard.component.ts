@@ -157,30 +157,6 @@ export class DashboardComponent implements OnInit {
     this.pomodorosThisWeek = weekCount;
   }
 
-  toggleTaskComplete(action: NextAction) {
-    if (!action.projectId) return;
-    
-    const tasks = this.dataService.getProjectTasks(action.projectId);
-    const task = tasks.find(t => t.id === action.id);
-    if (task) {
-      task.status = task.status === 'completed' ? 'not_started' : 'completed';
-      
-      // Update project completed count
-      const project = this.projects.find(p => p.id === action.projectId);
-      if (project) {
-        project.completedTasks = tasks.filter(t => t.status === 'completed').length;
-      }
-
-      this.loadNextActions();
-    }
-  }
-
-  isTaskComplete(action: NextAction): boolean {
-    if (!action.projectId) return false;
-    const tasks = this.dataService.getProjectTasks(action.projectId);
-    const task = tasks.find(t => t.id === action.id);
-    return task?.status === 'completed' || false;
-  }
 
   openCapture() {
     this.showCapture = true;

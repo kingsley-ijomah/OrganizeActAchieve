@@ -27,6 +27,29 @@
       </div>
     </section>
 
+    <!-- Pomodoro Summary -->
+    <section class="dashboard-section">
+      <div class="section-header">
+        <h2 class="section-title">Pomodoro Sessions</h2>
+      </div>
+      <div class="pomodoro-summary">
+        <div class="pomodoro-stat">
+          <span class="material-icons pomodoro-icon">timer</span>
+          <div class="pomodoro-content">
+            <span class="pomodoro-count">{{ pomodorosToday }}</span>
+            <span class="pomodoro-label">Today</span>
+          </div>
+        </div>
+        <div class="pomodoro-stat">
+          <span class="material-icons pomodoro-icon">calendar_today</span>
+          <div class="pomodoro-content">
+            <span class="pomodoro-count">{{ pomodorosThisWeek }}</span>
+            <span class="pomodoro-label">This Week</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <!-- Active Projects Overview -->
     <section class="dashboard-section">
       <div class="section-header">
@@ -69,18 +92,9 @@
           <h3 class="context-title">{{ getContextLabel(contextGroup.context) }}</h3>
           <ul class="actions-list">
             <li class="action-item" *ngFor="let action of contextGroup.actions">
-              <label class="action-checkbox-label">
-                <input 
-                  type="checkbox" 
-                  class="action-checkbox"
-                  [checked]="isTaskComplete(action)"
-                  (change)="toggleTaskComplete(action)"
-                />
-                <span class="action-title" [class.completed]="isTaskComplete(action)">
-                  {{ action.title }}
-                </span>
-              </label>
-              <span class="action-project" *ngIf="action.projectName">{{ action.projectName }}</span>
+              <span class="action-title">
+                {{ action.title }}
+              </span>
             </li>
           </ul>
         </div>
@@ -88,29 +102,6 @@
       <div class="empty-state" *ngIf="nextActions.length === 0">
         <span class="material-icons">check_circle</span>
         <p>All caught up! No next actions.</p>
-      </div>
-    </section>
-
-    <!-- Pomodoro Summary -->
-    <section class="dashboard-section">
-      <div class="section-header">
-        <h2 class="section-title">Pomodoro Sessions</h2>
-      </div>
-      <div class="pomodoro-summary">
-        <div class="pomodoro-stat">
-          <span class="material-icons pomodoro-icon">timer</span>
-          <div class="pomodoro-content">
-            <span class="pomodoro-count">{{ pomodorosToday }}</span>
-            <span class="pomodoro-label">Today</span>
-          </div>
-        </div>
-        <div class="pomodoro-stat">
-          <span class="material-icons pomodoro-icon">calendar_today</span>
-          <div class="pomodoro-content">
-            <span class="pomodoro-count">{{ pomodorosThisWeek }}</span>
-            <span class="pomodoro-label">This Week</span>
-          </div>
-        </div>
       </div>
     </section>
 
