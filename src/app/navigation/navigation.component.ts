@@ -16,7 +16,8 @@ export class NavigationComponent {
   navItems = [
     { path: '/dashboard', label: 'Dashboard', icon: 'dashboard' },
     { path: '/inbox', label: 'Inbox', icon: 'inbox' },
-    { path: '/projects', label: 'Projects', icon: 'folder' }
+    { path: '/projects', label: 'Projects', icon: 'folder' },
+    { path: '/calendar', label: 'Calendar', icon: 'calendar_today' }
   ];
 
   constructor(private router: Router) {

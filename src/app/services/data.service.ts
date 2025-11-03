@@ -32,6 +32,21 @@ export interface ProjectTask {
   order?: number; // Order for sorting tasks within a project
 }
 
+export interface CalendarEvent {
+  id: number;
+  title: string;
+  description?: string;
+  startDate: string; // ISO date string
+  startTime?: string; // ISO time string or HH:mm format
+  endDate?: string; // ISO date string (for multi-day events)
+  endTime?: string; // ISO time string or HH:mm format
+  isAllDay?: boolean;
+  location?: string;
+  reminderDate?: string; // ISO date string for tickler file
+  createdAt?: string;
+  updatedAt?: string;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -326,6 +341,171 @@ export class DataService {
 
   addInboxItem(item: InboxItem): void {
     this.inboxItems.push(item);
+  }
+
+  // Calendar Events
+  private calendarEvents: CalendarEvent[] = [
+    {
+      id: 1,
+      title: 'Team Standup',
+      description: 'Daily team synchronization meeting',
+      startDate: this.getTodayISO(),
+      startTime: '09:00',
+      endTime: '09:30',
+      isAllDay: false,
+      location: 'Conference Room A',
+      createdAt: DataService.getDateOffset(2)
+    },
+    {
+      id: 2,
+      title: 'Client Presentation',
+      description: 'Present quarterly results to stakeholders',
+      startDate: this.getDateOffset(3),
+      startTime: '14:00',
+      endTime: '15:30',
+      isAllDay: false,
+      location: 'Main Conference Room',
+      createdAt: DataService.getDateOffset(5)
+    },
+    {
+      id: 3,
+      title: 'Project Deadline',
+      description: 'Final deliverable submission',
+      startDate: this.getDateOffset(7),
+      isAllDay: true,
+      createdAt: DataService.getDateOffset(10)
+    },
+    {
+      id: 4,
+      title: 'Doctor Appointment',
+      description: 'Annual checkup',
+      startDate: this.getDateOffset(1),
+      startTime: '11:00',
+      endTime: '11:30',
+      isAllDay: false,
+      createdAt: DataService.getDateOffset(14)
+    },
+    {
+      id: 5,
+      title: 'Team Building Event',
+      description: 'Company offsite activity',
+      startDate: this.getDateOffset(14),
+      endDate: this.getDateOffset(15),
+      isAllDay: true,
+      location: 'Resort Location',
+      createdAt: DataService.getDateOffset(20)
+    },
+    {
+      id: 6,
+      title: 'Review Quarterly Goals',
+      reminderDate: this.getDateOffset(21),
+      startDate: this.getDateOffset(21),
+      isAllDay: true,
+      createdAt: DataService.getDateOffset(30)
+    }
+  ];
+
+  private getTodayISO(): string {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    return today.toISOString();
+  }
+
+  private getDateOffset(days: number): string {
+    const date = new Date();
+    date.setDate(date.getDate() + days);
+    date.setHours(0, 0, 0, 0);
+    return date.toISOString();
+  }
+
+  getCalendarEvents(startDate?: string, endDate?: string): CalendarEvent[] {
+    let events = [...this.calendarEvents];
+    
+    if (startDate && endDate) {
+      const start = new Date(startDate);
+      const end = new Date(endDate);
+      end.setHours(23, 59, 59, 999);
+      
+      events = events.filter(event => {
+        const eventStart = new Date(event.startDate);
+        const eventEnd = event.endDate ? new Date(event.endDate) : eventStart;
+        return (eventStart >= start && eventStart <= end) || 
+               (eventEnd >= start && eventEnd <= end) ||
+               (eventStart <= start && eventEnd >= end);
+      });
+    }
+    
+    // Also include tasks with due dates
+    const allProjects = this.getProjects();
+    allProjects.forEach(project => {
+      const tasks = this.getProjectTasks(project.id);
+      tasks.forEach(task => {
+        if (task.dueDate && task.status !== 'completed') {
+          const dueDate = new Date(task.dueDate);
+          if (!startDate || !endDate || (dueDate >= new Date(startDate) && dueDate <= new Date(endDate))) {
+            events.push({
+              id: -task.id, // Use negative ID to distinguish from regular events
+              title: task.title,
+              description: `From project: ${project.name}`,
+              startDate: task.dueDate,
+              isAllDay: true,
+              createdAt: task.createdAt
+            });
+          }
+        }
+      });
+    });
+    
+    return events.sort((a, b) => {
+      const dateA = new Date(a.startDate);
+      const dateB = new Date(b.startDate);
+      return dateA.getTime() - dateB.getTime();
+    });
+  }
+
+  getEventsForDate(date: string): CalendarEvent[] {
+    const dateObj = new Date(date);
+    dateObj.setHours(0, 0, 0, 0);
+    const nextDay = new Date(dateObj);
+    nextDay.setDate(nextDay.getDate() + 1);
+    
+    return this.getCalendarEvents(dateObj.toISOString(), nextDay.toISOString());
+  }
+
+  getTicklerItems(): CalendarEvent[] {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    return this.calendarEvents.filter(event => {
+      if (!event.reminderDate) return false;
+      const reminderDate = new Date(event.reminderDate);
+      reminderDate.setHours(0, 0, 0, 0);
+      return reminderDate <= today;
+    });
+  }
+
+  addCalendarEvent(event: Omit<CalendarEvent, 'id'>): CalendarEvent {
+    const newId = Math.max(0, ...this.calendarEvents.map(e => typeof e.id === 'number' ? e.id : 0)) + 1;
+    const newEvent: CalendarEvent = {
+      ...event,
+      id: newId,
+      createdAt: event.createdAt || new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    };
+    this.calendarEvents.push(newEvent);
+    return newEvent;
+  }
+
+  updateCalendarEvent(id: number, updates: Partial<CalendarEvent>): void {
+    const event = this.calendarEvents.find(e => e.id === id);
+    if (event) {
+      Object.assign(event, updates);
+      event.updatedAt = new Date().toISOString();
+    }
+  }
+
+  deleteCalendarEvent(id: number): void {
+    this.calendarEvents = this.calendarEvents.filter(e => e.id !== id);
   }
 }
 
