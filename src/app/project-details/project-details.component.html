@@ -42,7 +42,22 @@
 
   <section class="tasks">
     <ul class="task-list">
-      <li *ngFor="let t of filteredTasks" class="task-item" [class.completed]="t.status==='completed'" [class.selecting]="hasSelectedTasks" (click)="!hasSelectedTasks && openTaskModal(t)">
+      <li 
+        *ngFor="let t of filteredTasks; let i = index" 
+        class="task-item" 
+        [class.completed]="t.status==='completed'" 
+        [class.selecting]="hasSelectedTasks"
+        appDraggableListItem
+        [itemId]="t.id"
+        [itemIndex]="i"
+        [isDisabled]="hasSelectedTasks"
+        (click)="!hasSelectedTasks && openTaskModal(t)"
+        (dragStart)="onDragStart($event)"
+        (dragEnd)="onDragEnd()"
+        (dragOver)="onDragOver($event)"
+        (dragLeave)="onDragLeave()"
+        (drop)="onDrop($event)"
+      >
         <button class="icon-btn" type="button" (click)="toggleSelect(t.id, $event)" [class.selected]="isSelected(t.id)"><span class="material-icons">{{ isSelected(t.id) ? 'check_box' : (t.status === 'completed' ? 'check_box' : 'check_box_outline_blank') }}</span></button>
         <div class="task-main">
           <div class="title-row">

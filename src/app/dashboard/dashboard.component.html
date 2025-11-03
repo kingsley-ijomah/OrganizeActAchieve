@@ -1,1 +1,142 @@
-<p>dashboard works!</p>
+<div class="dashboard-container">
+  <header class="dashboard-header">
+    <h1 class="dashboard-title">Dashboard</h1>
+  </header>
+
+  <div class="dashboard-content">
+    <!-- Inbox Summary -->
+    <section class="dashboard-section">
+      <div class="section-header">
+        <h2 class="section-title">Inbox</h2>
+        <a routerLink="/inbox" class="section-link" *ngIf="inboxCount > 0">
+          View All
+          <span class="material-icons">arrow_forward</span>
+        </a>
+      </div>
+      <div class="inbox-summary" (click)="inboxCount > 0 && openCapture()" [class.has-items]="inboxCount > 0">
+        <div class="summary-content">
+          <span class="material-icons summary-icon">inbox</span>
+          <div class="summary-text">
+            <span class="summary-count">{{ inboxCount }}</span>
+            <span class="summary-label">{{ inboxCount === 1 ? 'unprocessed item' : 'unprocessed items' }}</span>
+          </div>
+        </div>
+        <button class="quick-capture-btn" type="button" (click)="openCapture(); $event.stopPropagation()" aria-label="Quick capture">
+          <span class="material-icons">add</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- Active Projects Overview -->
+    <section class="dashboard-section">
+      <div class="section-header">
+        <h2 class="section-title">Active Projects</h2>
+        <a routerLink="/projects" class="section-link">
+          View All
+          <span class="material-icons">arrow_forward</span>
+        </a>
+      </div>
+      <div class="projects-overview">
+        <div class="project-summary-card" *ngFor="let project of activeProjects.slice(0, 5)">
+          <a [routerLink]="['/projects', project.id]" class="project-link">
+            <div class="project-summary-header">
+              <span class="project-name">{{ project.name }}</span>
+              <span class="project-progress">{{ project.completedTasks }}/{{ project.totalTasks }}</span>
+            </div>
+            <div class="project-progress-bar">
+              <div class="progress-fill" [style.width.%]="getProgress(project)"></div>
+            </div>
+            <span class="warning-badge" *ngIf="projectsWithoutNextActions.includes(project)">
+              <span class="material-icons">warning</span>
+              No next action
+            </span>
+          </a>
+        </div>
+        <div class="empty-state" *ngIf="activeProjects.length === 0">
+          <span class="material-icons">folder_open</span>
+          <p>No active projects</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Next Actions by Context -->
+    <section class="dashboard-section">
+      <div class="section-header">
+        <h2 class="section-title">Next Actions</h2>
+      </div>
+      <div class="next-actions" *ngIf="nextActions.length > 0">
+        <div class="context-group" *ngFor="let contextGroup of getContextGroups()">
+          <h3 class="context-title">{{ getContextLabel(contextGroup.context) }}</h3>
+          <ul class="actions-list">
+            <li class="action-item" *ngFor="let action of contextGroup.actions">
+              <label class="action-checkbox-label">
+                <input 
+                  type="checkbox" 
+                  class="action-checkbox"
+                  [checked]="isTaskComplete(action)"
+                  (change)="toggleTaskComplete(action)"
+                />
+                <span class="action-title" [class.completed]="isTaskComplete(action)">
+                  {{ action.title }}
+                </span>
+              </label>
+              <span class="action-project" *ngIf="action.projectName">{{ action.projectName }}</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div class="empty-state" *ngIf="nextActions.length === 0">
+        <span class="material-icons">check_circle</span>
+        <p>All caught up! No next actions.</p>
+      </div>
+    </section>
+
+    <!-- Pomodoro Summary -->
+    <section class="dashboard-section">
+      <div class="section-header">
+        <h2 class="section-title">Pomodoro Sessions</h2>
+      </div>
+      <div class="pomodoro-summary">
+        <div class="pomodoro-stat">
+          <span class="material-icons pomodoro-icon">timer</span>
+          <div class="pomodoro-content">
+            <span class="pomodoro-count">{{ pomodorosToday }}</span>
+            <span class="pomodoro-label">Today</span>
+          </div>
+        </div>
+        <div class="pomodoro-stat">
+          <span class="material-icons pomodoro-icon">calendar_today</span>
+          <div class="pomodoro-content">
+            <span class="pomodoro-count">{{ pomodorosThisWeek }}</span>
+            <span class="pomodoro-label">This Week</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Weekly Review Prompt -->
+    <section class="dashboard-section" *ngIf="showWeeklyReviewPrompt">
+      <div class="weekly-review-prompt">
+        <div class="review-content">
+          <span class="material-icons review-icon">refresh</span>
+          <div class="review-text">
+            <h3 class="review-title">Time for Weekly Review</h3>
+            <p class="review-message">
+              {{ lastReviewDate ? 'It\'s been ' + getDaysSinceReview() + ' days since your last review.' : 'Start your first weekly review to keep your system current.' }}
+            </p>
+          </div>
+        </div>
+        <button class="review-btn" type="button" (click)="startWeeklyReview()">
+          Start Review
+          <span class="material-icons">arrow_forward</span>
+        </button>
+      </div>
+    </section>
+  </div>
+</div>
+
+<app-inbox-capture
+  [isVisible]="showCapture"
+  (add)="addItem($event)"
+  (close)="closeCapture()"
+></app-inbox-capture>

@@ -61,13 +61,30 @@
     </div>
   </div>
 
-  <div class="projects-grid">
-    <app-project-card 
-      *ngFor="let project of displayedProjects" 
-      [project]="project"
-      (open)="openDetails(project)"
-      (delete)="deleteProject($event)"
-    ></app-project-card>
+  <div class="projects-list">
+    <div 
+      class="project-summary-card" 
+      *ngFor="let project of displayedProjects; let i = index"
+      appDraggableListItem
+      [itemId]="project.id"
+      [itemIndex]="i"
+      [isDisabled]="false"
+      (dragStart)="onDragStart($event)"
+      (dragEnd)="onDragEnd()"
+      (dragOver)="onDragOver($event)"
+      (dragLeave)="onDragLeave()"
+      (drop)="onDrop($event)"
+    >
+      <a [routerLink]="['/projects', project.id]" class="project-link">
+        <div class="project-summary-header">
+          <span class="project-name">{{ project.name }}</span>
+          <span class="project-progress">{{ project.completedTasks }}/{{ project.totalTasks }}</span>
+        </div>
+        <div class="project-progress-bar">
+          <div class="progress-fill" [style.width.%]="getProgress(project)"></div>
+        </div>
+      </a>
+    </div>
   </div>
 
   <app-load-more-button 

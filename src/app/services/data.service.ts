@@ -13,6 +13,7 @@ export interface Project {
   totalTasks: number;
   completedTasks: number;
   createdAt?: string; // ISO string
+  order?: number; // Order for sorting projects
 }
 
 export interface ProjectTask {
@@ -27,6 +28,8 @@ export interface ProjectTask {
   pomodorosPlanned?: number;
   pomodorosDone?: number;
   createdAt?: string;
+  parentTaskId?: number; // Parent task ID for hierarchical relationships
+  order?: number; // Order for sorting tasks within a project
 }
 
 @Injectable({
@@ -143,13 +146,23 @@ export class DataService {
 
   getProjects(): Project[] {
     // Ensure createdAt exists for legacy projects
-    this.projects.forEach(p => { 
+    this.projects.forEach((p, index) => { 
       if (!p.createdAt) {
         p.createdAt = new Date().toISOString();
       }
+      // Initialize order if not set
+      if (p.order === undefined) {
+        p.order = index;
+      }
     });
-    // Sort by createdAt descending (newest first)
+    // Sort by order first, then by createdAt descending (newest first)
     return [...this.projects].sort((a, b) => {
+      const orderA = a.order !== undefined ? a.order : Infinity;
+      const orderB = b.order !== undefined ? b.order : Infinity;
+      if (orderA !== orderB) {
+        return orderA - orderB;
+      }
+      // If orders are equal or both undefined, sort by createdAt
       const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
       const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
       return dateB - dateA; // Descending order
@@ -158,12 +171,35 @@ export class DataService {
 
   getProjectTasks(projectId: number): ProjectTask[] {
     const tasks = this.projectIdToTasks[projectId] || [];
-    // Ensure pomodoros don't exceed max of 4
-    return tasks.map(task => ({
+    // Initialize order for tasks that don't have it
+    let maxOrder = 0;
+    tasks.forEach((task, index) => {
+      if (task.order === undefined) {
+        task.order = index;
+        maxOrder = Math.max(maxOrder, index);
+      } else {
+        maxOrder = Math.max(maxOrder, task.order);
+      }
+    });
+    // Ensure pomodoros don't exceed max of 4 and return sorted by order
+    const processedTasks = tasks.map(task => ({
       ...task,
       pomodorosPlanned: task.pomodorosPlanned != null ? Math.min(4, Math.max(0, task.pomodorosPlanned)) : undefined,
-      pomodorosDone: task.pomodorosDone != null ? Math.min(4, Math.max(0, task.pomodorosDone)) : undefined
+      pomodorosDone: task.pomodorosDone != null ? Math.min(4, Math.max(0, task.pomodorosDone)) : undefined,
+      order: task.order !== undefined ? task.order : (maxOrder + 1)
     }));
+    // Sort by order, then by createdAt for tasks without order
+    return processedTasks.sort((a, b) => {
+      const orderA = a.order !== undefined ? a.order : Infinity;
+      const orderB = b.order !== undefined ? b.order : Infinity;
+      if (orderA !== orderB) {
+        return orderA - orderB;
+      }
+      // If orders are equal or both undefined, sort by createdAt
+      const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+      const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+      return dateA - dateB;
+    });
   }
 
   addTaskToProjectWithDetails(projectId: number, task: Omit<ProjectTask, 'id' | 'projectId'>) {
@@ -172,16 +208,90 @@ export class DataService {
     // Cap pomodoros at 4 (max allowed)
     const pomodorosPlanned = task.pomodorosPlanned != null ? Math.min(4, Math.max(0, task.pomodorosPlanned)) : undefined;
     const pomodorosDone = task.pomodorosDone != null ? Math.min(4, Math.max(0, task.pomodorosDone)) : undefined;
-    list.push({ id: newId, projectId, title: task.title, status: task.status, description: task.description, context: task.context, priority: task.priority, dueDate: task.dueDate, pomodorosPlanned, pomodorosDone, createdAt: new Date().toISOString() });
+    // Set order to end of list (highest order + 1, or 0 if list is empty)
+    const maxOrder = list.length > 0 ? Math.max(...list.map(t => t.order !== undefined ? t.order : -1)) : -1;
+    list.push({ 
+      id: newId, 
+      projectId, 
+      title: task.title, 
+      status: task.status, 
+      description: task.description, 
+      context: task.context, 
+      priority: task.priority, 
+      dueDate: task.dueDate, 
+      pomodorosPlanned, 
+      pomodorosDone, 
+      parentTaskId: task.parentTaskId,
+      createdAt: new Date().toISOString(),
+      order: maxOrder + 1
+    });
     const project = this.projects.find(p => p.id === projectId);
     if (project) {
       project.totalTasks = (project.totalTasks || 0) + 1;
     }
   }
 
+  updateTaskOrder(projectId: number, taskId: number, newOrder: number): void {
+    const tasks = this.projectIdToTasks[projectId];
+    if (!tasks) return;
+    
+    const task = tasks.find(t => t.id === taskId);
+    if (!task) return;
+    
+    const oldOrder = task.order !== undefined ? task.order : Infinity;
+    task.order = newOrder;
+    
+    // Reorder other tasks: if moving down, decrease order of tasks between old and new position
+    // If moving up, increase order of tasks between new and old position
+    tasks.forEach(t => {
+      if (t.id === taskId) return;
+      
+      const currentOrder = t.order !== undefined ? t.order : Infinity;
+      
+      if (oldOrder < newOrder) {
+        // Moving down: decrease order of tasks between oldOrder and newOrder
+        if (currentOrder > oldOrder && currentOrder <= newOrder) {
+          t.order = (t.order !== undefined ? t.order : Infinity) - 1;
+        }
+      } else if (oldOrder > newOrder) {
+        // Moving up: increase order of tasks between newOrder and oldOrder
+        if (currentOrder >= newOrder && currentOrder < oldOrder) {
+          t.order = (t.order !== undefined ? t.order : Infinity) + 1;
+        }
+      }
+    });
+  }
+
+  updateTaskOrders(projectId: number, taskOrders: Array<{ id: number; order: number }>): void {
+    const tasks = this.projectIdToTasks[projectId];
+    if (!tasks) return;
+    
+    // Create a map for quick lookup
+    const orderMap = new Map(taskOrders.map(to => [to.id, to.order]));
+    
+    // Update all task orders
+    tasks.forEach(task => {
+      if (orderMap.has(task.id)) {
+        task.order = orderMap.get(task.id);
+      }
+    });
+  }
+
   updateProjectName(id: number, name: string) {
     const p = this.projects.find(p => p.id === id);
     if (p) p.name = name;
+  }
+
+  updateProjectOrders(projectOrders: Array<{ id: number; order: number }>): void {
+    // Create a map for quick lookup
+    const orderMap = new Map(projectOrders.map(po => [po.id, po.order]));
+    
+    // Update all project orders
+    this.projects.forEach(project => {
+      if (orderMap.has(project.id)) {
+        project.order = orderMap.get(project.id);
+      }
+    });
   }
 
   removeInboxItem(itemId: number): void {
@@ -201,6 +311,9 @@ export class DataService {
   }
 
   addProject(project: Project): void {
+    // Set order to end of list (highest order + 1, or 0 if list is empty)
+    const maxOrder = this.projects.length > 0 ? Math.max(...this.projects.map(p => p.order !== undefined ? p.order : -1)) : -1;
+    project.order = maxOrder + 1;
     this.projects.push(project);
   }
 

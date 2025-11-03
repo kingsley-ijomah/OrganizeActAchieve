@@ -8,12 +8,13 @@ import { TaskEditModalComponent, TaskEditModel } from '../shared/task-edit-modal
 import { TaskCreateModalComponent, TaskCreateModel } from '../shared/task-create-modal/task-create-modal.component';
 import { TaskFilterComponent, TaskFilterValue } from '../shared/task-filter/task-filter.component';
 import { ConfirmModalComponent } from '../shared/confirm-modal/confirm-modal.component';
+import { DraggableListItemDirective } from '../shared/draggable-list-item/draggable-list-item.directive';
 import { DataService, Project, ProjectTask } from '../services/data.service';
 
 @Component({
   selector: 'app-project-details',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule, ProgressStatComponent, NumberAdjustModalComponent, TaskEditModalComponent, TaskCreateModalComponent, TaskFilterComponent, ConfirmModalComponent],
+  imports: [CommonModule, RouterModule, FormsModule, ProgressStatComponent, NumberAdjustModalComponent, TaskEditModalComponent, TaskCreateModalComponent, TaskFilterComponent, ConfirmModalComponent, DraggableListItemDirective],
   templateUrl: './project-details.component.html',
   styleUrl: './project-details.component.scss'
 })
@@ -289,5 +290,70 @@ export class ProjectDetailsComponent {
       'deferred': 'Deferred'
     };
     return statusMap[status] || status;
+  }
+
+  // Drag and drop handlers
+  draggedTaskId: number | null = null;
+
+  onDragStart(event: { itemId: any; index: number }) {
+    this.draggedTaskId = event.itemId;
+  }
+
+  onDragEnd() {
+    this.draggedTaskId = null;
+  }
+
+  onDragOver(index: number) {
+    // Visual feedback is handled by the directive
+  }
+
+  onDragLeave() {
+    // Visual feedback is handled by the directive
+  }
+
+  onDrop(dropIndex: number) {
+    if (!this.draggedTaskId || !this.project) return;
+    
+    const tasks = [...this.filteredTasks]; // Create a copy to manipulate
+    const draggedTask = tasks.find(t => t.id === this.draggedTaskId);
+    if (!draggedTask) return;
+
+    // Find current position
+    const currentIndex = tasks.findIndex(t => t.id === this.draggedTaskId);
+    if (currentIndex === dropIndex) {
+      return; // No change needed
+    }
+
+    // Remove from old position and insert at new position
+    tasks.splice(currentIndex, 1);
+    tasks.splice(dropIndex, 0, draggedTask);
+    
+    // Recalculate all orders to be sequential integers (0, 1, 2, ...)
+    // Note: We need to update orders for all tasks in the project, not just filtered ones
+    // So we'll update the full tasks array
+    const allTasks = this.data.getProjectTasks(this.project.id);
+    
+    // Get the filtered task IDs in their new order
+    const reorderedTaskIds = tasks.map(t => t.id);
+    
+    // For filtered tasks, update their order based on new position
+    // For non-filtered tasks, keep their existing order relative to each other
+    let newOrderIndex = 0;
+    reorderedTaskIds.forEach((taskId, idx) => {
+      const task = allTasks.find(t => t.id === taskId);
+      if (task) {
+        task.order = newOrderIndex;
+        newOrderIndex++;
+      }
+    });
+    
+    // Update all task orders in the data service
+    const taskOrders = allTasks.map(task => ({ id: task.id, order: task.order || 0 }));
+    this.data.updateTaskOrders(this.project.id, taskOrders);
+    
+    // Refresh the tasks list
+    this.tasks = this.data.getProjectTasks(this.project.id);
+    
+    this.draggedTaskId = null;
   }
 }

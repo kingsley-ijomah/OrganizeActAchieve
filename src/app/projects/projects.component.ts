@@ -4,14 +4,15 @@ import { RouterOutlet } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { DataService, Project } from '../services/data.service';
 import { Router } from '@angular/router';
-import { ProjectCardComponent } from '../shared/project-card/project-card.component';
 import { LoadMoreButtonComponent } from '../shared/load-more-button/load-more-button.component';
 import { ListFilterComponent, ListFilterValue } from '../shared/list-filter/list-filter.component';
+import { RouterModule } from '@angular/router';
+import { DraggableListItemDirective } from '../shared/draggable-list-item/draggable-list-item.directive';
 
 @Component({
   selector: 'app-projects',
   standalone: true,
-  imports: [CommonModule, RouterOutlet, FormsModule, ProjectCardComponent, LoadMoreButtonComponent, ListFilterComponent],
+  imports: [CommonModule, RouterOutlet, FormsModule, RouterModule, LoadMoreButtonComponent, ListFilterComponent, DraggableListItemDirective],
   templateUrl: './projects.component.html',
   styleUrls: ['./projects.component.scss']
 })
@@ -143,5 +144,78 @@ export class ProjectsComponent implements OnInit {
     this.closeFilter();
     // Reset displayed items count when filter changes
     this.displayedItemsCount = Math.min(this.itemsPerPage, this.filteredProjects.length);
+  }
+
+  // Drag and drop handlers
+  draggedProjectId: number | null = null;
+
+  onDragStart(event: { itemId: any; index: number }) {
+    this.draggedProjectId = event.itemId;
+  }
+
+  onDragEnd() {
+    this.draggedProjectId = null;
+  }
+
+  onDragOver(index: number) {
+    // Visual feedback is handled by the directive
+  }
+
+  onDragLeave() {
+    // Visual feedback is handled by the directive
+  }
+
+  onDrop(dropIndex: number) {
+    if (!this.draggedProjectId) return;
+    
+    const projects = [...this.displayedProjects]; // Create a copy to manipulate
+    const draggedProject = projects.find(p => p.id === this.draggedProjectId);
+    if (!draggedProject) return;
+
+    // Find current position
+    const currentIndex = projects.findIndex(p => p.id === this.draggedProjectId);
+    if (currentIndex === dropIndex) {
+      return; // No change needed
+    }
+
+    // Remove from old position and insert at new position
+    projects.splice(currentIndex, 1);
+    projects.splice(dropIndex, 0, draggedProject);
+    
+    // Recalculate all orders to be sequential integers (0, 1, 2, ...)
+    // Get all projects (not just displayed ones)
+    const allProjects = this.dataService.getProjects();
+    
+    // Get the displayed project IDs in their new order
+    const reorderedProjectIds = projects.map(p => p.id);
+    
+    // Update orders for displayed projects based on new position
+    let newOrderIndex = 0;
+    reorderedProjectIds.forEach((projectId, idx) => {
+      const project = allProjects.find(p => p.id === projectId);
+      if (project) {
+        project.order = newOrderIndex;
+        newOrderIndex++;
+      }
+    });
+    
+    // For projects not in displayed list, adjust their orders if needed
+    allProjects.forEach(project => {
+      if (!reorderedProjectIds.includes(project.id)) {
+        if (project.order !== undefined && project.order >= newOrderIndex) {
+          // Shift down projects that come after the reordered section
+          project.order = (project.order || 0) + projects.length;
+        }
+      }
+    });
+    
+    // Update all project orders in the data service
+    const projectOrders = allProjects.map(project => ({ id: project.id, order: project.order || 0 }));
+    this.dataService.updateProjectOrders(projectOrders);
+    
+    // Refresh the projects list
+    this.projects = this.dataService.getProjects();
+    
+    this.draggedProjectId = null;
   }
 }

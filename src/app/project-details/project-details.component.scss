@@ -43,11 +43,15 @@ app-progress-stat { flex: 1 1 100%; opacity: 0.7; }
 .selection-btn.complete-btn:hover { background:#e8f5e9; border-color:#1e7e34; color:#1e7e34; }
 .selection-btn.cancel-btn { border-color:#e0e0e0; color:#666; }
 .selection-btn.cancel-btn:hover { background:#f5f5f5; border-color:#d0d0d0; color:#333; }
-.task-item { display:flex; align-items:center; gap:10px; padding:12px; border:1.5px solid #e0e0e0; border-radius:12px; cursor:pointer; transition:all 0.2s ease; }
+.task-item { display:flex; align-items:center; gap:10px; padding:12px; border:1.5px solid #e0e0e0; border-radius:12px; cursor:pointer; transition:all 0.2s ease; position:relative; }
 .task-item:hover { background:#fafafa; border-color:#d0d0d0; }
 .task-item.selecting { cursor:default; }
 .task-item.selecting:hover { background:transparent; border-color:#e0e0e0; }
 .task-item.completed { opacity: 0.7; }
+.task-item.dragging { opacity: 0.5; cursor: grabbing; }
+.task-item.drag-over { border-color: #4a90e2; border-style: dashed; background: #f0f7ff; }
+.task-item[appDraggableListItem][draggable="true"] { cursor: grab; }
+.task-item[appDraggableListItem][draggable="true"]:active { cursor: grabbing; }
 .checkbox { font-size:20px; color:#4a90e2; }
 .empty { color:#999; padding:12px; text-align:center; }
 .task-main { flex:1; display:flex; flex-direction:column; gap:8px; }
@@ -111,6 +115,7 @@ app-progress-stat { flex: 1 1 100%; opacity: 0.7; }
   .selection-btn.cancel-btn:hover { background:#333333; border-color:#4a4a4a; color:#bbb; }
   .task-item:hover { background:#333333; border-color:#4a4a4a; }
   .task-item.selecting:hover { background:transparent; border-color:#3a3a3a; }
+  .task-item.drag-over { border-color: #5aa0f2; background: #2a2a3a; }
   .mini-btn { background:#2a2a2a; border-color:#3a3a3a; color:#fff; }
   .icon-btn:hover { background:#333333; }
   .icon-btn .material-icons { color:#999; }

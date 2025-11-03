@@ -14,6 +14,7 @@ export class NavigationComponent {
   activeRoute: string = '';
 
   navItems = [
+    { path: '/dashboard', label: 'Dashboard', icon: 'dashboard' },
     { path: '/inbox', label: 'Inbox', icon: 'inbox' },
     { path: '/projects', label: 'Projects', icon: 'folder' }
   ];

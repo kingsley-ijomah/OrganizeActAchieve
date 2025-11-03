@@ -16,6 +16,14 @@
   font-weight: 600;
 }
 
+.optional-label {
+  font-size: 11px;
+  font-weight: 400;
+  color: #999;
+  font-style: italic;
+  margin-left: 4px;
+}
+
 .text-input {
   border: 1.5px solid #e0e0e0;
   border-radius: 12px;
@@ -98,6 +106,10 @@
 @media (prefers-color-scheme: dark) {
   .field-label {
     color: #bbb;
+  }
+
+  .optional-label {
+    color: #888;
   }
   
   .text-input {
